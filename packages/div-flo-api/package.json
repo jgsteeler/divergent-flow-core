@@ -1,0 +1,30 @@
+{
+  "name": "@div-flo/api",
+  "version": "0.1.0",
+  "description": "API server for Divergent Flow",
+  "main": "dist/server.js",
+  "scripts": {
+    "build": "tsc",
+    "dev": "nodemon --exec ts-node src/server.ts",
+    "start": "node dist/server.js",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "express": "^4.18.0",
+    "@div-flo/models": "*",
+    "@div-flo/core": "*",
+    "tsyringe": "^4.8.0",
+    "reflect-metadata": "^0.2.2",
+    "swagger-ui-express": "^5.0.0",
+    "swagger-jsdoc": "^6.2.8"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.0",
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0",
+    "nodemon": "^3.0.0",
+    "ts-node": "^10.9.0",
+    "@types/swagger-ui-express": "^4.1.6",
+    "@types/swagger-jsdoc": "^6.0.4"
+  }
+}
