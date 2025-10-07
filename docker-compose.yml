@@ -1,0 +1,39 @@
+services:
+  divergent-flow-api:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:3001"  # External port 8080 maps to internal port 3001
+    environment:
+      - NODE_ENV=development
+    volumes:
+      # Mount source for development (optional - remove for production)
+      - ./packages:/app/packages:ro
+      - ./package.json:/app/package.json:ro
+    networks:
+      - divergent-flow-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://localhost:3001/health').then(r => r.ok ? process.exit(0) : process.exit(1)).catch(() => process.exit(1))"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Future services can be added here (CLI, UI, databases, etc.)
+  # divergent-flow-cli:
+  #   build: ../divergent-flow-cli
+  #   depends_on:
+  #     - divergent-flow-api
+  #   networks:
+  #     - divergent-flow-network
+
+networks:
+  divergent-flow-network:
+    driver: bridge
+
+# Volumes for persistent data (when needed)
+volumes:
+  api_data:
+    driver: local
