@@ -55,8 +55,21 @@ app.get('/health', (req, res) => {
 });
 
 app.listen(port, () => {
-  console.log(`Divergent Flow API server running on port ${port}`);
-  console.log(`Health check: http://localhost:${port}/health`);
-  console.log(`Version endpoint: http://localhost:${port}/version`);
-  console.log(`API documentation: http://localhost:${port}/api-docs`);
+  const isDocker = process.env.NODE_ENV === 'production' || process.env.DOCKER === 'true';
+  const externalPort = process.env.EXTERNAL_PORT || (port === 3001 ? 8080 : port);
+  
+  console.log(`🚀 Divergent Flow API server running on port ${port}`);
+  
+  if (isDocker) {
+    console.log(`📦 Docker container - Internal port: ${port}, External port: ${externalPort}`);
+    console.log(`🔗 Access externally at:`);
+    console.log(`   Health check: http://localhost:${externalPort}/health`);
+    console.log(`   Version endpoint: http://localhost:${externalPort}/version`);
+    console.log(`   API documentation: http://localhost:${externalPort}/api-docs`);
+  } else {
+    console.log(`💻 Local development:`);
+    console.log(`   Health check: http://localhost:${port}/health`);
+    console.log(`   Version endpoint: http://localhost:${port}/version`);
+    console.log(`   API documentation: http://localhost:${port}/api-docs`);
+  }
 });

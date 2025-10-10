@@ -7,6 +7,8 @@ services:
       - "8080:3001"  # External port 8080 maps to internal port 3001
     environment:
       - NODE_ENV=development
+      - DOCKER=true
+      - EXTERNAL_PORT=8080
     volumes:
       # Mount source for development (optional - remove for production)
       - ./packages:/app/packages:ro

@@ -1,24 +1,5 @@
-# Multi-stage build for Divergent Flow API
-FROM node:20-slim AS builder
-
-# Set working directory
-WORKDIR /app
-
-# Copy package files for workspace
-COPY package*.json ./
-COPY packages/ ./packages/
-
-# Install dependencies (use install instead of ci for workspace flexibility)
-RUN npm install
-
-# Copy source code
-COPY . .
-
-# Build all packages
-RUN npm run build
-
-# Production stage - using latest Node with security updates
-FROM node:20-bookworm-slim AS production
+# Simplified single-stage build for Divergent Flow API
+FROM node:20-bookworm-slim
 
 # Install security updates
 RUN apt-get update && apt-get upgrade -y && apt-get clean && rm -rf /var/lib/apt/lists/*
@@ -26,15 +7,11 @@ RUN apt-get update && apt-get upgrade -y && apt-get clean && rm -rf /var/lib/apt
 # Set working directory
 WORKDIR /app
 
-# Copy package files for workspace
-COPY package*.json ./
-COPY packages/*/package*.json ./packages/*/
+# Copy everything
+COPY . .
 
-# Install only production dependencies
-RUN npm install --omit=dev && npm cache clean --force
-
-# Copy built code from builder stage
-COPY --from=builder /app/packages/*/dist ./packages/*/dist
+# Install dependencies and build
+RUN npm install && npm run build
 
 # Create non-root user
 RUN groupadd -r nodejs && useradd -r -g nodejs apiuser
