@@ -4,10 +4,11 @@
     "module": "CommonJS", 
     "moduleResolution": "node",
     "lib": ["ES2022"],
+    "types": ["jest", "node"],
     "outDir": "./dist",
     "rootDir": "./",
     "strict": true,
-    "ignoreDeprecations": "5.0",
+    "ignoreDeprecations": "6.0",
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "skipLibCheck": true,
@@ -19,12 +20,16 @@
     "incremental": true,
     "resolveJsonModule": true,
     "experimentalDecorators": true,
-    "emitDecoratorMetadata": true
+    "emitDecoratorMetadata": true,
+    "baseUrl": ".",
+    "paths": {
+      "@div-flo/models": ["packages/div-flo-models/src"],
+      "@div-flo/core": ["packages/div-flo-core/src"],
+      "@div-flo/api": ["packages/div-flo-api/src"]
+    }
   },
   "exclude": [
     "node_modules",
-    "dist",
-    "**/*.test.ts",
-    "**/*.spec.ts"
+    "dist"
   ]
 }

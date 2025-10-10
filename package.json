@@ -25,11 +25,12 @@
     "sync-versions": "node scripts/sync-versions.js"
   },
   "devDependencies": {
+    "@types/jest": "^30.0.0",
     "@types/node": "^20.0.0",
-    "typescript": "^5.0.0",
-    "ts-node": "^10.9.0",
     "nodemon": "^3.0.0",
-    "standard-version": "^9.5.0"
+    "standard-version": "^9.5.0",
+    "ts-node": "^10.9.0",
+    "typescript": "^5.0.0"
   },
   "engines": {
     "node": ">=18.0.0"
