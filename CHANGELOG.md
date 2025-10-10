@@ -1,15 +1,15 @@
 # Changelog
 
+## Changelogs are cool
+
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
 ### [0.1.2](https://github.com/jgsteeler/divergent-flow-core/compare/v0.1.1...v0.1.2) (2025-10-10)
-
 
 ### Features
 
 * add comprehensive unit testing infrastructure across all packages ([9a05170](https://github.com/jgsteeler/divergent-flow-core/commit/9a051708f0db5de575455949558cdbfa664d5129))
 * add Docker support and versioning from package.json ([1af34a2](https://github.com/jgsteeler/divergent-flow-core/commit/1af34a2094a5f2d503d1d826c239c84a0f29d729))
-
 
 ### Bug Fixes
 
@@ -18,7 +18,6 @@ All notable changes to this project will be documented in this file. See [standa
 * update TypeScript configuration for modern module resolution ([6c0dd02](https://github.com/jgsteeler/divergent-flow-core/commit/6c0dd02efbca13e58677ede51cdb22e5780f63c6))
 
 ### 0.1.1 (2025-10-07)
-
 
 ### Features
 
