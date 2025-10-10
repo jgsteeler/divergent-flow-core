@@ -3,12 +3,17 @@ import swaggerUi from 'swagger-ui-express';
 import { configureDI, container } from './container';
 import { VersionController } from './controllers/VersionController';
 import { swaggerSpec } from './swagger';
+import { requestLogger, responseLogger, errorLogger, logger } from './middleware/logger';
 
 // Configure dependency injection
 configureDI();
 
 const app = express();
 const port = process.env.PORT || 3001;
+
+// Logging middleware (order matters!)
+app.use(requestLogger);
+app.use(responseLogger);
 
 app.use(express.json());
 
@@ -54,10 +59,22 @@ app.get('/health', (req, res) => {
   res.json({ status: 'ok', service: 'divergent-flow-api' });
 });
 
+// Error logging middleware (must be after routes)
+app.use(errorLogger);
+
 app.listen(port, () => {
-  const isDocker = process.env.NODE_ENV === 'production' || process.env.DOCKER === 'true';
+  const isDocker = process.env.DOCKER === 'true';
   const externalPort = process.env.EXTERNAL_PORT || (port === 3001 ? 8080 : port);
   
+  logger.info('🚀 Divergent Flow API server started', {
+    port,
+    isDocker,
+    externalPort,
+    environment: process.env.NODE_ENV || 'development',
+    logLevel: process.env.LOG_LEVEL || 'info'
+  });
+  
+  // Console output for immediate visibility
   console.log(`🚀 Divergent Flow API server running on port ${port}`);
   
   if (isDocker) {
@@ -72,4 +89,6 @@ app.listen(port, () => {
     console.log(`   Version endpoint: http://localhost:${port}/version`);
     console.log(`   API documentation: http://localhost:${port}/api-docs`);
   }
+  
+  logger.info('Server startup complete - Ready to handle requests');
 });
