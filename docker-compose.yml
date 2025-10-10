@@ -6,13 +6,19 @@ services:
     ports:
       - "8080:3001"  # External port 8080 maps to internal port 3001
     environment:
-      - NODE_ENV=development
-      - DOCKER=true
-      - EXTERNAL_PORT=8080
+      - NODE_ENV=${NODE_ENV}
+      - DOCKER=${DOCKER}
+      - PORT=${PORT}
+      - EXTERNAL_PORT=${EXTERNAL_PORT}
+      - LOG_LEVEL=${LOG_LEVEL}
+      - LOG_DIR=${LOG_DIR}
+      - API_VERSION=${API_VERSION}
     volumes:
       # Mount source for development (optional - remove for production)
       - ./packages:/app/packages:ro
       - ./package.json:/app/package.json:ro
+      # Persistent logs volume
+      - divergent_flow_logs:/var/log/divergent-flow
     networks:
       - divergent-flow-network
     restart: unless-stopped
@@ -35,7 +41,9 @@ networks:
   divergent-flow-network:
     driver: bridge
 
-# Volumes for persistent data (when needed)
+# Volumes for persistent data
 volumes:
   api_data:
+    driver: local
+  divergent_flow_logs:
     driver: local
