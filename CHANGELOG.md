@@ -4,7 +4,6 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### [0.1.3](https://github.com/jgsteeler/divergent-flow-core/compare/v0.1.2...v0.1.3) (2025-10-10)
 
-
 ### Features
 
 * enhance logging and environment configuration ([9379842](https://github.com/jgsteeler/divergent-flow-core/commit/9379842791f1e798f16fb3c8f94b187fb1264c7e))
