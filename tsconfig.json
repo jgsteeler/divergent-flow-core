@@ -5,8 +5,6 @@
     "moduleResolution": "node",
     "lib": ["ES2022"],
     "types": ["jest", "node"],
-    "outDir": "./dist",
-    "rootDir": "./",
     "strict": true,
     "ignoreDeprecations": "6.0",
     "esModuleInterop": true,
@@ -28,6 +26,12 @@
       "@div-flo/api": ["packages/div-flo-api/src"]
     }
   },
+  "references": [
+    { "path": "./packages/div-flo-models" },
+    { "path": "./packages/div-flo-core" },
+    { "path": "./packages/div-flo-api" }
+  ],
+  "files": [],
   "exclude": [
     "node_modules",
     "dist"
