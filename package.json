@@ -1,6 +1,6 @@
 {
   "name": "divergent-flow-core",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "Core business logic and API services for Divergent Flow - ADHD-optimized productivity system",
   "private": true,
   "workspaces": [
@@ -18,8 +18,8 @@
     "docker:up": "docker-compose up -d",
     "docker:down": "docker-compose down",
     "docker:logs": "docker-compose logs -f divergent-flow-api",
-  "docker:dev": "docker-compose up --build",
-  "dev:docker": "docker compose -f docker-compose.dev.yml up --watch --build",
+    "docker:dev": "docker-compose up --build",
+    "dev:docker": "docker compose -f docker-compose.dev.yml up --watch --build",
     "release": "standard-version && npm run sync-versions",
     "release:minor": "standard-version --release-as minor && npm run sync-versions",
     "release:major": "standard-version --release-as major && npm run sync-versions",
