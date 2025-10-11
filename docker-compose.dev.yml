@@ -1,0 +1,45 @@
+
+services:
+  api-dev:
+    container_name: divergent-flow-api-dev
+    build:
+      context: .
+      dockerfile: packages/div-flo-api/Dockerfile.dev
+    ports:
+      - "3002:3001" # Map host 3002 to container 3001 for dev
+    env_file:
+      - .env.dev
+    develop:
+      watch:
+        - action: sync
+          path: ./packages/div-flo-api/src
+          target: /usr/src/app/src
+          ignore:
+            - node_modules/
+        - action: sync
+          path: ./packages/div-flo-models/src
+          target: /usr/src/app/../div-flo-models/src
+          ignore:
+            - node_modules/
+        - action: sync
+          path: ./packages/div-flo-core/src
+          target: /usr/src/app/../div-flo-core/src
+          ignore:
+            - node_modules/
+        - action: rebuild
+          path: ./packages/div-flo-api/package.json
+        - action: rebuild
+          path: ./packages/div-flo-api/package-lock.json
+        - action: rebuild
+          path: ./packages/div-flo-models/package.json
+        - action: rebuild
+          path: ./packages/div-flo-models/package-lock.json
+        - action: rebuild
+          path: ./packages/div-flo-core/package.json
+        - action: rebuild
+          path: ./packages/div-flo-core/package-lock.json
+    volumes:
+      - ./:/monorepo
+      - /monorepo/packages/div-flo-api/node_modules
+    working_dir: /monorepo/packages/div-flo-api
+    command: ["nodemon", "src/server.ts"]
