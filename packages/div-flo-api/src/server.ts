@@ -1,4 +1,5 @@
 import express from 'express';
+import cors from 'cors';
 import swaggerUi from 'swagger-ui-express';
 import { configureDI, container } from './container';
 import { VersionController } from './controllers/VersionController';
@@ -10,6 +11,13 @@ configureDI();
 
 const app = express();
 const port = process.env.PORT || 3001;
+
+
+// Enable CORS for local dev and UI
+app.use(cors({
+  origin: process.env.CORS_ORIGIN || 'http://localhost:5173',
+  credentials: true
+}));
 
 // Logging middleware (order matters!)
 app.use(requestLogger);
