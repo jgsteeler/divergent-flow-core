@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.4](https://github.com/jgsteeler/divergent-flow-core/compare/v0.1.3...v0.1.4) (2025-10-11)
+
+
+### Features
+
+* add endpoint to serve OpenAPI JSON spec at /openapi.json ([d98aeb4](https://github.com/jgsteeler/divergent-flow-core/commit/d98aeb499f3a27c46a3c88e0ef10bcf27f800a71))
+
 ### [0.1.3](https://github.com/jgsteeler/divergent-flow-core/compare/v0.1.2...v0.1.3) (2025-10-10)
 
 ### Features
