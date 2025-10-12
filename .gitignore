@@ -93,3 +93,4 @@ packages/*/.env.*
 
 # Swagger generated files
 swagger.json
+.env.debug

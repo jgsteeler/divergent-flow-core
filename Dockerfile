@@ -1,36 +1,48 @@
-# Simplified single-stage build for Divergent Flow API
-FROM node:20-bookworm-slim
+# --- Build Stage ---
+FROM node:20-bookworm-slim AS build
 
-# Install security updates
 RUN apt-get update && apt-get upgrade -y && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Set working directory
+WORKDIR /build
+
+# Copy root and all workspace package.json files
+COPY package*.json ./
+COPY packages/div-flo-api/package*.json ./packages/div-flo-api/
+COPY packages/div-flo-core/package*.json ./packages/div-flo-core/
+COPY packages/div-flo-models/package*.json ./packages/div-flo-models/
+
+# Install all deps and build all packages
+RUN npm install
+COPY . .
+RUN npm run build
+
+# --- Production Stage ---
+FROM node:20-bookworm-slim
+
+RUN groupadd -r nodejs && useradd -r -g nodejs apiuser
 WORKDIR /app
 
-# Copy everything
-COPY . .
+# Copy built dist and package.json for all packages
+COPY --from=build /build/packages/div-flo-api/dist ./packages/div-flo-api/dist
+COPY --from=build /build/packages/div-flo-api/package.json ./packages/div-flo-api/package.json
+COPY --from=build /build/packages/div-flo-core/dist ./packages/div-flo-core/dist
+COPY --from=build /build/packages/div-flo-core/package.json ./packages/div-flo-core/package.json
+COPY --from=build /build/packages/div-flo-models/dist ./packages/div-flo-models/dist
+COPY --from=build /build/packages/div-flo-models/package.json ./packages/div-flo-models/package.json
+COPY --from=build /build/package.json ./package.json
 
-# Install dependencies and build
-RUN npm install && npm run build
+# Copy lockfile if present (for npm ci)
+COPY --from=build /build/package-lock.json ./package-lock.json
 
-# Create non-root user
-RUN groupadd -r nodejs && useradd -r -g nodejs apiuser
+# Install only production deps (resolves workspaces)
+RUN npm install --production
 
 # Create log directory and set ownership
 RUN mkdir -p /var/log/divergent-flow && chown -R apiuser:nodejs /var/log/divergent-flow
-
-# Change ownership of the app directory
 RUN chown -R apiuser:nodejs /app
-
-# Switch to non-root user
 USER apiuser
-
-# Expose port 3001 (internal container port)
 EXPOSE 3001
-
-# Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
   CMD node -e "fetch('http://localhost:3001/health').then(r => r.ok ? process.exit(0) : process.exit(1)).catch(() => process.exit(1))"
-
 # Start the API server
-CMD ["node", "packages/div-flo-api/dist/src/server.js"]
+CMD ["node", "/app/packages/div-flo-api/dist/server.js"]
