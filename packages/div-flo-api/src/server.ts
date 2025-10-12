@@ -1,3 +1,8 @@
+// Only load dotenv in local development
+if (process.env.NODE_ENV !== 'production' && process.env.NODE_ENV !== 'docker' && process.env.DOCKER !== 'true') {
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  require('dotenv').config();
+}
 import express from 'express';
 import cors from 'cors';
 import swaggerUi from 'swagger-ui-express';
@@ -13,15 +18,21 @@ const app = express();
 const port = process.env.PORT || 3001;
 
 
+// Debug: log the CORS_ORIGINS env var at startup
+logger.info('[CORS] process.env.CORS_ORIGINS', { origins: process.env.CORS_ORIGINS });
 // Enable CORS for local dev, UI, and Docker
 const allowedOrigins = (process.env.CORS_ORIGINS || 'http://localhost:5173').split(',').map(o => o.trim());
 app.use(cors({
   origin: function (origin, callback) {
+  // Log the incoming origin and allowed origins for debugging
+  logger.info('[CORS] Incoming Origin', { origin });
+  logger.info('[CORS] Allowed Origins', { allowedOrigins });
     // allow requests with no origin (like mobile apps, curl, etc.)
     if (!origin) return callback(null, true);
     if (allowedOrigins.includes(origin)) {
       return callback(null, true);
     } else {
+  logger.warn('[CORS] Blocked Origin', { origin });
       return callback(new Error('Not allowed by CORS'), false);
     }
   },
@@ -91,16 +102,14 @@ app.listen(port, () => {
   const isDocker = process.env.DOCKER === 'true';
   const externalPort = process.env.EXTERNAL_PORT || (port === 3001 ? 8080 : port);
   
-  logger.info('🚀 Divergent Flow API server started', {
-    port,
-    isDocker,
-    externalPort,
-    environment: process.env.NODE_ENV || 'development',
-    logLevel: process.env.LOG_LEVEL || 'info'
-  });
+
   
   // Console output for immediate visibility
   console.log(`🚀 Divergent Flow API server running on port ${port}`);
+  console.log(`NODE_ENV: ${process.env.NODE_ENV}`);
+  console.log(`LOG_LEVEL: ${process.env.LOG_LEVEL}`);
+  console.log(`CORS_ORIGINS: ${process.env.CORS_ORIGINS}`);
+  console.log(`LOG_DIR: ${process.env.LOG_DIR}`);
   
   if (isDocker) {
     console.log(`📦 Docker container - Internal port: ${port}, External port: ${externalPort}`);

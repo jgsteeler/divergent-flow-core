@@ -2,14 +2,15 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "outDir": "./dist",
-    "rootDir": ".",
+    "rootDir": "./src",
     "baseUrl": ".",
     "paths": {
       "@div-flo/models": ["../../packages/div-flo-models/src"],
       "@div-flo/core": ["../../packages/div-flo-core/src"]
-    }
+    },
+    "composite": true
   },
-  "include": ["src/**/*", "tests/**/*"],
+    "include": ["src/**/*"],
   "exclude": ["node_modules", "dist"],
   "references": [
     { "path": "../div-flo-models" },
