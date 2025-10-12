@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.9](https://github.com/jgsteeler/divergent-flow-core/compare/v0.1.8...v0.1.9) (2025-10-12)
+
+
+### Features
+
+* add development API service and update Docker commands in package.json ([c31517c](https://github.com/jgsteeler/divergent-flow-core/commit/c31517c08197841e390dc33f05381107dde53dba))
+
+
+### Bug Fixes
+
+* resolve TypeScript ignoreDeprecations configuration for Docker build ([5558252](https://github.com/jgsteeler/divergent-flow-core/commit/555825234715566edfb60d77bade19841bf9cc83))
+* update build script to build packages in dependency order ([45c5964](https://github.com/jgsteeler/divergent-flow-core/commit/45c596495208bc32d7a13b13b902f37920812f9d))
+
 ### [0.1.8](https://github.com/jgsteeler/divergent-flow-core/compare/v0.1.7...v0.1.8) (2025-10-12)
 
 
