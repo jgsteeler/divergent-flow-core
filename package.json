@@ -1,17 +1,17 @@
 {
   "name": "divergent-flow-core",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "description": "Core business logic and API services for Divergent Flow - ADHD-optimized productivity system",
   "private": true,
   "workspaces": [
     "packages/*"
   ],
   "scripts": {
-  "build": "tsc -b",
-  "dev": "cd packages/div-flo-api && nodemon src/server.ts",
-  "test": "npm workspaces foreach --topological --no-private -- npm test",
-  "lint": "npm workspaces foreach --topological --no-private -- npm run lint",
-  "clean": "tsc -b --clean",
+    "build": "tsc -b",
+    "dev": "cd packages/div-flo-api && nodemon src/server.ts",
+    "test": "npm workspaces foreach --topological --no-private -- npm test",
+    "lint": "npm workspaces foreach --topological --no-private -- npm run lint",
+    "clean": "tsc -b --clean",
     "install:all": "npm install",
     "start": "npm run start --workspace=packages/div-flo-api",
     "docker:build": "docker-compose build --no-cache",

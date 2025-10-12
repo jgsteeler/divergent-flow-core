@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.8](https://github.com/jgsteeler/divergent-flow-core/compare/v0.1.7...v0.1.8) (2025-10-12)
+
+
+### Features
+
+* refactor Docker setup, enhance logger, and update TypeScript configurations ([645ad48](https://github.com/jgsteeler/divergent-flow-core/commit/645ad481987dc094780fda9ccf9c74df5df27c3a))
+
 ### [0.1.7](https://github.com/jgsteeler/divergent-flow-core/compare/v0.1.6...v0.1.7) (2025-10-12)
 
 
