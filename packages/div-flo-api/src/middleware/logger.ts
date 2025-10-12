@@ -82,21 +82,19 @@ export const logger = winston.createLogger({
   ]
 });
 
-// Console transport for development (sanitized)
-if (process.env.NODE_ENV !== 'production') {
-  logger.add(new winston.transports.Console({
-    format: winston.format.combine(
-      winston.format.colorize(),
-      winston.format.timestamp({ format: 'HH:mm:ss' }),
-      winston.format.printf(({ timestamp, level, message, ...meta }) => {
-        const sanitizedMeta = sanitizeObject(meta);
-        return `${timestamp} [${level}]: ${message} ${
-          Object.keys(sanitizedMeta).length ? JSON.stringify(sanitizedMeta, null, 2) : ''
-        }`;
-      })
-    )
-  }));
-}
+// Always add a Winston console transport (sanitized), even in Docker/production
+logger.add(new winston.transports.Console({
+  format: winston.format.combine(
+    winston.format.colorize(),
+    winston.format.timestamp({ format: 'HH:mm:ss' }),
+    winston.format.printf(({ timestamp, level, message, ...meta }) => {
+      const sanitizedMeta = sanitizeObject(meta);
+      return `${timestamp} [${level}]: ${message} ${
+        Object.keys(sanitizedMeta).length ? JSON.stringify(sanitizedMeta, null, 2) : ''
+      }`;
+    })
+  )
+}));
 
 // Sanitization function to remove sensitive data
 function sanitizeObject(obj: any): any {

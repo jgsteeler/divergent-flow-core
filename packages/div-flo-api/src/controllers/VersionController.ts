@@ -20,7 +20,7 @@ import { IVersionService } from '@div-flo/models';
  *         timestamp:
  *           type: string
  *           format: date-time
- *           description: When the version info was generated
+ *           description: When the version info was generated UTC
  *           example: "2025-10-06T20:30:00.000Z"
  *     Error:
  *       type: object
