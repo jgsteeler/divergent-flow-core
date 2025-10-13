@@ -65,7 +65,7 @@ app.get('/', (req, res) => {
 });
 
 // API Routes
-app.use('/version', versionController.getRouter());
+app.use('/v1/version', versionController.getRouter());
 
 // Health check (kept in server.ts as it's infrastructure)
 /**

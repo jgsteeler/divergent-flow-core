@@ -71,6 +71,12 @@ Thumbs.db
 logs
 *.log
 
+# Ignore compiled test artifacts in all packages
+packages/*/tests/**/*.js
+packages/*/tests/**/*.js.map
+packages/*/tests/**/*.d.ts
+packages/*/tests/**/*.d.ts.map
+
 # Database files
 *.sqlite
 *.sqlite3

@@ -47,7 +47,7 @@ export class VersionController {
 
   /**
    * @swagger
-   * /version:
+   * /v1/version:
    *   get:
    *     summary: Get version information
    *     description: Returns the current version, service name, and timestamp

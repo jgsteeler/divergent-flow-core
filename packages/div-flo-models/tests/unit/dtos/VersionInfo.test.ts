@@ -1,6 +1,6 @@
 import { VersionInfo } from '../../../src/dtos/VersionInfo';
 
-describe('VersionInfo DTO', () => {
+describe('VersionInfo DTO (API v1 contract)', () => {
   describe('interface contract', () => {
     it('should accept valid VersionInfo objects', () => {
       // Arrange
