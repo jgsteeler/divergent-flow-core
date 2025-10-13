@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.10](https://github.com/jgsteeler/divergent-flow-core/compare/v0.1.9...v0.1.10) (2025-10-13)
+
+
+### Features
+
+* implement API versioning and update related routes, tests, and configurations ([ae066a1](https://github.com/jgsteeler/divergent-flow-core/commit/ae066a10231c41f0bebfe0294b407e7fd4136a59))
+
 ### [0.1.9](https://github.com/jgsteeler/divergent-flow-core/compare/v0.1.8...v0.1.9) (2025-10-12)
 
 
