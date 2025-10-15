@@ -1,4 +1,4 @@
-import { VersionInfo } from '../dtos/VersionInfo';
+import { VersionInfo } from '../dto/VersionInfo';
 
 export interface IVersionRepository {
   getVersionInfo(): Promise<VersionInfo>;

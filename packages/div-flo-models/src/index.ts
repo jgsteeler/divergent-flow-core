@@ -1,5 +1,5 @@
 // DTOs
-export * from './dtos/VersionInfo';
+export * from './dto/VersionInfo';
 
 // Interfaces  
 export * from './interfaces/IVersionService';
