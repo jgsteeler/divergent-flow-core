@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import { VersionService } from '../../../src/services/VersionService';
 import { IVersionRepository } from '@div-flo/models';
 import { VersionInfo } from '@div-flo/models';

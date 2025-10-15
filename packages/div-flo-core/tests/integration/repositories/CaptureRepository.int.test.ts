@@ -1,0 +1,77 @@
+import 'reflect-metadata';
+import { PrismaClient, Capture, Prisma } from '@prisma/client';
+import { CaptureRepository } from '../../../src/repositories/CaptureRepository';
+
+describe('CaptureRepository (integration)', () => {
+  const prisma = new PrismaClient();
+  const repo = new CaptureRepository(prisma);
+  let testCapture: Capture;
+  let userId: string;
+
+  beforeAll(async () => {
+    // Optionally run migrations here
+    await prisma.user.deleteMany();
+    const user = await prisma.user.create({
+      data: {
+        id: 'user-1',
+        email: 'test@example.com',
+        name: 'Test User',
+        preferences: Prisma.JsonNull,
+      },
+    });
+    userId = user.id;
+  });
+
+  afterAll(async () => {
+    await prisma.capture.deleteMany();
+    await prisma.user.deleteMany();
+    await prisma.$disconnect();
+  });
+
+  beforeEach(async () => {
+    await prisma.capture.deleteMany();
+    testCapture = await prisma.capture.create({
+      data: {
+        id: 'cap-1',
+        userId,
+        rawText: 'test capture',
+        migratedDate: null,
+      },
+    });
+  });
+
+  it('creates a capture', async () => {
+    const newCapture = await repo.create({
+      id: 'cap-2',
+      userId,
+      rawText: 'new capture',
+      migratedDate: null,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    });
+    expect(newCapture.rawText).toBe('new capture');
+    const found = await prisma.capture.findUnique({ where: { id: 'cap-2' } });
+    expect(found).not.toBeNull();
+  });
+
+  it('finds a capture by id', async () => {
+    const found = await repo.findById(testCapture.id);
+    expect(found?.rawText).toBe('test capture');
+  });
+
+  it('updates a capture', async () => {
+    const updated = await repo.update({ ...testCapture, rawText: 'updated' });
+    expect(updated.rawText).toBe('updated');
+  });
+
+  it('deletes a capture', async () => {
+    await repo.delete(testCapture.id);
+    const found = await prisma.capture.findUnique({ where: { id: testCapture.id } });
+    expect(found).toBeNull();
+  });
+
+  it('lists captures by user', async () => {
+    const captures = await repo.listByUser(userId);
+    expect(captures.length).toBeGreaterThan(0);
+  });
+});

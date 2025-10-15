@@ -1,4 +1,4 @@
-import { VersionInfo } from '../../../src/dtos/VersionInfo';
+import { VersionInfo } from '../../../src/dto/VersionInfo';
 
 describe('VersionInfo DTO (API v1 contract)', () => {
   describe('interface contract', () => {

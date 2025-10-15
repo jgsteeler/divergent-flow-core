@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import { VersionRepository } from '../../../src/repositories/VersionRepository';
 import * as fs from 'fs';
 import * as path from 'path';
