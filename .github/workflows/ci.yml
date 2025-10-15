@@ -29,5 +29,9 @@ jobs:
           node-version: 20
       - name: Install dependencies (all workspaces)
         run: npm install
+      - name: Generate Prisma client (div-flo-models)
+        run: npx prisma generate --schema=packages/div-flo-models/prisma/schema.prisma
+      - name: Generate Prisma client (div-flo-core)
+        run: npx prisma generate --schema=packages/div-flo-models/prisma/schema.prisma
       - name: Run all tests (monorepo root)
         run: npm test
