@@ -1,6 +1,6 @@
 {
   "name": "divergent-flow-core",
-  "version": "0.1.10",
+  "version": "0.1.11",
   "description": "Core business logic and API services for Divergent Flow - ADHD-optimized productivity system",
   "private": true,
   "workspaces": [
@@ -9,8 +9,8 @@
   "scripts": {
     "build": "tsc -b",
     "dev": "cd packages/div-flo-api && nodemon src/server.ts",
-  "test": "npm test --workspaces",
-  "lint": "npm run lint --workspaces",
+    "test": "npm test --workspaces",
+    "lint": "npm run lint --workspaces",
     "clean": "tsc -b --clean",
     "install:all": "npm install",
     "start": "npm run start --workspace=packages/div-flo-api",
