@@ -53,8 +53,8 @@ This approach ensures clear separation of breaking changes and allows clients to
 const options = {
   definition: swaggerDefinition,
   apis: [
-    path.join(__dirname, 'controllers', '*.ts'),
-    path.join(__dirname, 'server.ts')
+    path.join(__dirname, 'controllers', '*.js'),
+    path.join(__dirname, 'server.js')
   ], // paths to files containing OpenAPI definitions
 };
 

@@ -10,7 +10,12 @@
     },
     "composite": true
   },
-    "include": ["src/**/*", "tests/**/*"],
+    "include": [
+      "src/**/*.ts",
+      "src/**/*.js",
+      "tests/**/*.ts",
+      "tests/**/*.js"
+    ],
   "exclude": ["node_modules", "dist"],
   "references": [
     { "path": "../div-flo-models" },

@@ -13,7 +13,10 @@ COPY packages/div-flo-core/package*.json ./packages/div-flo-core/
 COPY packages/div-flo-models/package*.json ./packages/div-flo-models/
 
 # Install all deps and build all packages
+  RUN apt-get update -y && apt-get install -y openssl
+  COPY packages/div-flo-models/prisma ./prisma
   RUN npm install
+  RUN npx prisma generate --schema=prisma/schema.prisma
   COPY . .
   # Build workspaces in dependency order
   RUN npm run build --workspace=@div-flo/models && npm run build --workspace=@div-flo/core && npm run build --workspace=@div-flo/api
@@ -37,9 +40,9 @@ COPY --from=build /build/package.json ./package.json
 
 # Copy root .env file for API config
 COPY --from=build /build/package-lock.json ./package-lock.json
-
-# Install only production deps (resolves workspaces)
+COPY --from=build /build/packages/div-flo-models/prisma /app/packages/div-flo-models/prisma
 RUN npm install --production
+RUN npx prisma generate --schema=packages/div-flo-models/prisma/schema.prisma
 
 RUN mkdir -p /var/log/divergent-flow && chown -R apiuser:nodejs /var/log/divergent-flow
 RUN chown -R apiuser:nodejs /app
@@ -48,4 +51,4 @@ EXPOSE 3001
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
   CMD node -e "fetch('http://localhost:3001/health').then(r => r.ok ? process.exit(0) : process.exit(1)).catch(() => process.exit(1))"
 # Start the API server
-CMD ["node", "/app/packages/div-flo-api/dist/server.js"]
+CMD ["node", "/app/packages/div-flo-api/dist/src/server.js"]

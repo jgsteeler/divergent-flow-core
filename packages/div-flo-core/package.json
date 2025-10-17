@@ -2,8 +2,8 @@
   "name": "@div-flo/core",
   "version": "0.1.10",
   "description": "Core business logic and data access for Divergent Flow",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "dist/src/index.js",
+  "types": "dist/src/index.d.ts",
   "scripts": {
     "build": "tsc",
     "dev": "nodemon --exec ts-node src/index.ts",

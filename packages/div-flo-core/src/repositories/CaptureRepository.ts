@@ -1,13 +1,13 @@
-import { injectable } from "tsyringe";
-import { ICaptureRepository } from "@div-flo/models/src/interfaces/ICaptureRepository";
-import { Capture, PrismaClient, Prisma } from "@prisma/client";
+import { injectable, inject } from "tsyringe";
+import { ICaptureRepository } from "@div-flo/models";
+import { Capture, PrismaClient } from "@prisma/client";
 
 @injectable()
 export class CaptureRepository implements ICaptureRepository {
   private prisma: PrismaClient;
 
-  constructor(prismaClient?: PrismaClient) {
-    this.prisma = prismaClient ?? new PrismaClient();
+  constructor(@inject('PrismaClient') prismaClient: PrismaClient) {
+    this.prisma = prismaClient;
   }
 
   async create(capture: Capture): Promise<Capture> {

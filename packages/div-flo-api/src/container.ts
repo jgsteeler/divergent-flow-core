@@ -1,18 +1,68 @@
-import 'reflect-metadata';
-import { container } from 'tsyringe';
-import { IVersionService, IVersionRepository } from '@div-flo/models';
-import { VersionService, VersionRepository } from '@div-flo/core';
+// =========================
+// Dependency Injection Setup
+// =========================
+
+// External dependencies
+import "reflect-metadata";
+import { container } from "tsyringe";
+
+// Model interfaces
+import {
+  IVersionService,
+  IVersionRepository,
+  IUserService,
+  IUserRepository,
+  ICaptureService,
+  ICaptureRepository,
+} from "@div-flo/models";
+
+// Core implementations
+import {
+  VersionService,
+  VersionRepository,
+  UserService,
+  UserRepository,
+  CaptureService,
+  CaptureRepository,
+} from "@div-flo/core";
+import { PrismaClient } from '@prisma/client';
+
+// Controllers
+import { CaptureController } from "./controllers/CaptureController";
+import { UserController } from "./controllers/UserController";
 
 // Configure DI container
 export function configureDI(): void {
-  // Register repository
-  container.register<IVersionRepository>('IVersionRepository', {
-    useClass: VersionRepository
+  // --- Repository registrations ---
+  // Register PrismaClient as singleton
+  container.registerInstance<PrismaClient>('PrismaClient', new PrismaClient());
+  container.register<IVersionRepository>("IVersionRepository", {
+    useClass: VersionRepository,
+  });
+  container.register<IUserRepository>("IUserRepository", {
+    useClass: UserRepository,
+  });
+  container.register<ICaptureRepository>("ICaptureRepository", {
+    useFactory: (c) => new CaptureRepository(c.resolve<PrismaClient>('PrismaClient')),
   });
 
-  // Register service  
-  container.register<IVersionService>('IVersionService', {
-    useClass: VersionService
+  // --- Service registrations ---
+  container.register<IVersionService>("IVersionService", {
+    useClass: VersionService,
+  });
+  container.register<IUserService>("IUserService", {
+    useClass: UserService,
+  });
+  container.register<ICaptureService>("ICaptureService", {
+    useClass: CaptureService,
+  });
+
+  // --- Controller registrations ---
+  container.register<CaptureController>("CaptureController", {
+    useClass: CaptureController,
+  });
+  container.register<UserController>("UserController", {
+    useClass: UserController,
   });
 }
 
