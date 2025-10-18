@@ -8,10 +8,12 @@ module.exports = {
     '!src/**/*.d.ts',
     '!src/**/index.ts',
   ],
-  setupFilesAfterEnv: ['<rootDir>/tests/setup.ts'],
+  setupFilesAfterEnv: [],
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
   },
   clearMocks: true,
   resetMocks: true,
+  globalSetup: '<rootDir>/jest-global-setup.js',
+  globalTeardown: '<rootDir>/jest-global-teardown.js',
 };

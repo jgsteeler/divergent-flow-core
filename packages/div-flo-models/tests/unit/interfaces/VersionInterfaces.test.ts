@@ -1,6 +1,6 @@
 import { IVersionService, IVersionRepository, VersionInfo } from '../../../src/index';
 
-describe('Version Interfaces', () => {
+describe('Version Interfaces (API v1 contract)', () => {
   describe('IVersionService interface', () => {
     it('should define getVersion method contract', () => {
       // Arrange - Create a mock implementation

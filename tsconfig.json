@@ -23,7 +23,8 @@
       "@div-flo/models": ["packages/div-flo-models/src"],
       "@div-flo/core": ["packages/div-flo-core/src"],
       "@div-flo/api": ["packages/div-flo-api/src"]
-    }
+    },
+    "removeComments": false
   },
   "references": [
     { "path": "./packages/div-flo-models" },

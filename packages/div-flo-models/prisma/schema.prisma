@@ -1,0 +1,31 @@
+// Divergent Flow - Prisma schema
+// Located in div-flo-models
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          String    @id @default(uuid())
+  email       String    @unique
+  name        String?
+  preferences Json?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  captures    Capture[]
+}
+
+model Capture {
+  id           String   @id @default(uuid())
+  userId       String
+  rawText      String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  migratedDate DateTime?
+  user         User     @relation(fields: [userId], references: [id])
+}

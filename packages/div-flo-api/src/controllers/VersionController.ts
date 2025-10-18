@@ -1,34 +1,9 @@
+// =========================
+// VersionController
+// =========================
 import { Router, Request, Response } from 'express';
 import { injectable, inject } from 'tsyringe';
 import { IVersionService } from '@div-flo/models';
-
-/**
- * @swagger
- * components:
- *   schemas:
- *     VersionInfo:
- *       type: object
- *       properties:
- *         version:
- *           type: string
- *           description: The version of the service
- *           example: "0.1.0"
- *         service:
- *           type: string
- *           description: The name of the service
- *           example: "divergent-flow-core"
- *         timestamp:
- *           type: string
- *           format: date-time
- *           description: When the version info was generated UTC
- *           example: "2025-10-06T20:30:00.000Z"
- *     Error:
- *       type: object
- *       properties:
- *         error:
- *           type: string
- *           description: Error message
- */
 
 @injectable()
 export class VersionController {
@@ -47,7 +22,7 @@ export class VersionController {
 
   /**
    * @swagger
-   * /version:
+   * /v1/version:
    *   get:
    *     summary: Get version information
    *     description: Returns the current version, service name, and timestamp
@@ -76,6 +51,33 @@ export class VersionController {
     }
   }
 
+  /**
+   * @swagger
+   * components:
+   *   schemas:
+   *     VersionInfo:
+   *       type: object
+   *       properties:
+   *         version:
+   *           type: string
+   *           description: The version of the service
+   *           example: "0.1.0"
+   *         service:
+   *           type: string
+   *           description: The name of the service
+   *           example: "divergent-flow-core"
+   *         timestamp:
+   *           type: string
+   *           format: date-time
+   *           description: When the version info was generated UTC
+   *           example: "2025-10-06T20:30:00.000Z"
+   *     Error:
+   *       type: object
+   *       properties:
+   *         error:
+   *           type: string
+   *           description: Error message
+   */
   public getRouter(): Router {
     return this.router;
   }

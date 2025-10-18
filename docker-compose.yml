@@ -21,13 +21,57 @@ services:
       retries: 3
       start_period: 40s
 
-  # Future services can be added here (CLI, UI, databases, etc.)
-  # divergent-flow-cli:
-  #   build: ../divergent-flow-cli
-  #   depends_on:
-  #     - divergent-flow-api
-  #   networks:
-  #     - divergent-flow-network
+  div-flo-api-dev:
+    container_name: div-flo-api-dev
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8081:3001"  # Dev API on different external port
+    env_file:
+      - .env.dev
+    volumes:
+      - divergent_flow_logs_dev:/var/log/divergent-flow
+    networks:
+      - divergent-flow-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://localhost:3001/health').then(r => r.ok ? process.exit(0) : process.exit(1)).catch(() => process.exit(1))"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+
+  postgres:
+    image: postgres:15
+    container_name: div-flo-db
+    restart: always
+    environment:
+      POSTGRES_USER: divergent
+      POSTGRES_PASSWORD: divergentpw
+      POSTGRES_DB: div-flo-data
+    ports:
+      - "5432:5432"
+    volumes:
+      - div_flo_data:/var/lib/postgresql/data
+    networks:
+      - divergent-flow-network
+
+  postgres-dev:
+    image: postgres:15
+    container_name: div-flo-db-dev
+    restart: always
+    environment:
+      POSTGRES_USER: divergent
+      POSTGRES_PASSWORD: divergentpw
+      POSTGRES_DB: div-flo-data-dev
+    ports:
+      - "5433:5432"
+    volumes:
+      - div_flo_data_dev:/var/lib/postgresql/data
+    networks:
+      - divergent-flow-network
 
 networks:
   divergent-flow-network:
@@ -38,4 +82,10 @@ volumes:
   api_data:
     driver: local
   divergent_flow_logs:
+    driver: local
+  divergent_flow_logs_dev:
+    driver: local
+  div_flo_data:
+    driver: local
+  div_flo_data_dev:
     driver: local
