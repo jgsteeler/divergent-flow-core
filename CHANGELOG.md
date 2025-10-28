@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.12](https://github.com/jgsteeler/divergent-flow-core/compare/v0.1.11...v0.1.12) (2025-10-21)
+
+
+### Features
+
+* enhance VersionRepository to dynamically locate package.json for version retrieval ([95d00bf](https://github.com/jgsteeler/divergent-flow-core/commit/95d00bf5f8fc84943acbbc6d2b7531ec3645f1c1))
+
 ### [0.1.11](https://github.com/jgsteeler/divergent-flow-core/compare/v0.1.10...v0.1.11) (2025-10-17)
 
 
