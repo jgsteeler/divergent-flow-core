@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.13](https://github.com/jgsteeler/divergent-flow-core/compare/v0.1.12...v0.1.13) (2025-10-29)
+
+
+### Features
+
+* add capture filtering and user schema for authentication ([85b2421](https://github.com/jgsteeler/divergent-flow-core/commit/85b242179ba5958c171aea7191418e09082eda5c))
+* add endpoint to list captures by user email ([bf75140](https://github.com/jgsteeler/divergent-flow-core/commit/bf751408493f4bd5efa56a25a4be75152a17386f))
+* update User API for new authentication schema ([e9d305c](https://github.com/jgsteeler/divergent-flow-core/commit/e9d305cab7ea14bac60d0e319ca94a6841aef854))
+
+
+### Bug Fixes
+
+* preserve data in user schema migration ([6012cf2](https://github.com/jgsteeler/divergent-flow-core/commit/6012cf220f282d74a79a189ec23bc8ba1260adb2))
+
 ### [0.1.12](https://github.com/jgsteeler/divergent-flow-core/compare/v0.1.11...v0.1.12) (2025-10-21)
 
 
