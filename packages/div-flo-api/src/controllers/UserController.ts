@@ -60,6 +60,37 @@ export class UserController {
   /**
    * @swagger
    * /v1/user:
+   *   get:
+   *     summary: List all users
+   *     tags: [User]
+   *     responses:
+   *       200:
+   *         description: List of users
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: array
+   *               items:
+   *                 $ref: '#/components/schemas/User'
+   *       400:
+   *         description: Error
+   *         content:
+   *           application/json:
+   *             schema:
+   *               $ref: '#/components/schemas/Error'
+   */
+  private async listUsers(req: Request, res: Response): Promise<void> {
+    try {
+      const users = await this.userService.listUsers();
+      res.json(users);
+    } catch (error: any) {
+      res.status(400).json({ error: error.message });
+    }
+  }
+
+  /**
+   * @swagger
+   * /v1/user:
    *   post:
    *     summary: Create a new user
    *     tags: [User]
