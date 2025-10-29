@@ -34,6 +34,10 @@ const swaggerDefinition = {
     version: '1',
     description: `ADHD-optimized productivity system API
 
+## OpenAPI Specification
+
+The OpenAPI specification is available at: [/openapi.json](/openapi.json)
+
 ## API Versioning Strategy
 
 All API endpoints are versioned using a URL prefix (e.g., /v1/...).
