@@ -21,40 +21,11 @@ export class UserController {
     this.router.post('/', this.createUser.bind(this));
     this.router.get('/email/:email', this.getUserByEmail.bind(this));
     this.router.get('/username/:username', this.getUserByUsername.bind(this));
+    this.router.get('/email/:email', this.getUserByEmail.bind(this));
+    this.router.get('/username/:username', this.getUserByUsername.bind(this));
     this.router.get('/:id', this.getUser.bind(this));
     this.router.put('/:id', this.updateUser.bind(this));
     this.router.delete('/:id', this.deleteUser.bind(this));
-  }
-
-  /**
-   * @swagger
-   * /v1/user:
-   *   get:
-   *     summary: List all users
-   *     tags: [User]
-   *     responses:
-   *       200:
-   *         description: List of users
-   *         content:
-   *           application/json:
-   *             schema:
-   *               type: array
-   *               items:
-   *                 $ref: '#/components/schemas/User'
-   *       400:
-   *         description: Error
-   *         content:
-   *           application/json:
-   *             schema:
-   *               $ref: '#/components/schemas/Error'
-   */
-  private async listUsers(req: Request, res: Response): Promise<void> {
-    try {
-      const users = await this.userService.listUsers();
-      res.json(users);
-    } catch (error: any) {
-      res.status(400).json({ error: error.message });
-    }
   }
 
   /**
