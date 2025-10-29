@@ -1,28 +1,32 @@
 import { CaptureController } from '../../src/controllers/CaptureController';
-import { ICaptureService } from '@div-flo/models';
+import { ICaptureService, IUserService } from '@div-flo/models';
 import { Request, Response } from 'express';
 
 describe('CaptureController', () => {
   let controller: CaptureController;
-  let mockService: jest.Mocked<ICaptureService>;
+  let mockCaptureService: jest.Mocked<ICaptureService>;
+  let mockUserService: jest.Mocked<IUserService>;
   let req: Partial<Request>;
   let res: Partial<Response>;
 
   beforeEach(() => {
-    mockService = {
+    mockCaptureService = {
       createCapture: jest.fn(),
       getCaptureById: jest.fn(),
       updateCapture: jest.fn(),
       deleteCapture: jest.fn(),
       listCapturesByUser: jest.fn(),
     } as any;
-    controller = new CaptureController(mockService);
+    mockUserService = {
+      getUserByEmail: jest.fn(),
+    } as any;
+    controller = new CaptureController(mockCaptureService, mockUserService);
     req = {};
     res = { status: jest.fn().mockReturnThis(), json: jest.fn(), send: jest.fn() };
   });
 
   it('should create a capture', async () => {
-    mockService.createCapture.mockResolvedValue({
+    mockCaptureService.createCapture.mockResolvedValue({
       id: '1',
       userId: 'user1',
       rawText: 'test',
@@ -44,7 +48,7 @@ describe('CaptureController', () => {
   });
 
   it('should handle error when creating capture', async () => {
-    mockService.createCapture.mockRejectedValue(new Error('Create failed'));
+    mockCaptureService.createCapture.mockRejectedValue(new Error('Create failed'));
     req.body = { rawText: 'test' };
     await controller['createCapture'](req as Request, res as Response);
     expect(res.status).toHaveBeenCalledWith(400);
@@ -52,7 +56,7 @@ describe('CaptureController', () => {
   });
 
   it('should get capture by id', async () => {
-    mockService.getCaptureById.mockResolvedValue({
+    mockCaptureService.getCaptureById.mockResolvedValue({
       id: '1',
       userId: 'user1',
       rawText: 'test',
@@ -66,7 +70,7 @@ describe('CaptureController', () => {
   });
 
   it('should return 404 when capture not found', async () => {
-    mockService.getCaptureById.mockResolvedValue(null);
+    mockCaptureService.getCaptureById.mockResolvedValue(null);
     req.params = { id: '999' };
     await controller['getCapture'](req as Request, res as Response);
     expect(res.status).toHaveBeenCalledWith(404);
@@ -74,7 +78,7 @@ describe('CaptureController', () => {
   });
 
   it('should update capture', async () => {
-    mockService.updateCapture.mockResolvedValue({
+    mockCaptureService.updateCapture.mockResolvedValue({
       id: '1',
       userId: 'user1',
       rawText: 'updated',
@@ -89,7 +93,7 @@ describe('CaptureController', () => {
   });
 
   it('should handle error when updating capture', async () => {
-    mockService.updateCapture.mockRejectedValue(new Error('Update failed'));
+    mockCaptureService.updateCapture.mockRejectedValue(new Error('Update failed'));
     req.params = { id: '1' };
     req.body = { rawText: 'updated' };
     await controller['updateCapture'](req as Request, res as Response);
@@ -98,7 +102,7 @@ describe('CaptureController', () => {
   });
 
   it('should delete capture', async () => {
-    mockService.deleteCapture.mockResolvedValue();
+    mockCaptureService.deleteCapture.mockResolvedValue();
     req.params = { id: '1' };
     await controller['deleteCapture'](req as Request, res as Response);
     expect(res.status).toHaveBeenCalledWith(204);
@@ -106,7 +110,7 @@ describe('CaptureController', () => {
   });
 
   it('should handle error when deleting capture', async () => {
-    mockService.deleteCapture.mockRejectedValue(new Error('Delete failed'));
+    mockCaptureService.deleteCapture.mockRejectedValue(new Error('Delete failed'));
     req.params = { id: '1' };
     await controller['deleteCapture'](req as Request, res as Response);
     expect(res.status).toHaveBeenCalledWith(400);
@@ -114,7 +118,7 @@ describe('CaptureController', () => {
   });
 
   it('should list captures by user', async () => {
-    mockService.listCapturesByUser.mockResolvedValue([{
+    mockCaptureService.listCapturesByUser.mockResolvedValue([{
       id: '1',
       userId: 'user1',
       rawText: 'test',
@@ -129,7 +133,7 @@ describe('CaptureController', () => {
   });
 
   it('should list only unmigrated captures when migrated=false', async () => {
-    mockService.listCapturesByUser.mockResolvedValue([{
+    mockCaptureService.listCapturesByUser.mockResolvedValue([{
       id: '1',
       userId: 'user1',
       rawText: 'test',
@@ -140,16 +144,78 @@ describe('CaptureController', () => {
     req.params = { userId: 'user1' };
     req.query = { migrated: 'false' };
     await controller['listCapturesByUser'](req as Request, res as Response);
-    expect(mockService.listCapturesByUser).toHaveBeenCalledWith('user1', true);
+    expect(mockCaptureService.listCapturesByUser).toHaveBeenCalledWith('user1', true);
     expect(res.json).toHaveBeenCalledWith(expect.arrayContaining([expect.any(Object)]));
   });
 
   it('should handle error when listing captures', async () => {
-    mockService.listCapturesByUser.mockRejectedValue(new Error('List failed'));
+    mockCaptureService.listCapturesByUser.mockRejectedValue(new Error('List failed'));
     req.params = { userId: 'user1' };
     req.query = {};
     await controller['listCapturesByUser'](req as Request, res as Response);
     expect(res.status).toHaveBeenCalledWith(400);
     expect(res.json).toHaveBeenCalledWith({ error: 'List failed' });
+  });
+
+  it('should list captures by user email', async () => {
+    mockUserService.getUserByEmail.mockResolvedValue({
+      id: 'user1',
+      email: 'test@example.com',
+      username: 'testuser',
+      emailVerified: false,
+      password: null,
+      lastLoginAt: null,
+      createdAt: new Date('2025-10-16T00:00:00Z'),
+      updatedAt: new Date('2025-10-16T00:00:00Z')
+    });
+    mockCaptureService.listCapturesByUser.mockResolvedValue([{
+      id: '1',
+      userId: 'user1',
+      rawText: 'test',
+      createdAt: new Date('2025-10-16T00:00:00Z'),
+      updatedAt: new Date('2025-10-16T00:00:00Z'),
+      migratedDate: null
+    }]);
+    req.params = { email: 'test@example.com' };
+    req.query = {};
+    await controller['listCapturesByUserEmail'](req as Request, res as Response);
+    expect(mockUserService.getUserByEmail).toHaveBeenCalledWith('test@example.com');
+    expect(mockCaptureService.listCapturesByUser).toHaveBeenCalledWith('user1', false);
+    expect(res.json).toHaveBeenCalledWith(expect.arrayContaining([expect.any(Object)]));
+  });
+
+  it('should return 404 when user not found by email', async () => {
+    mockUserService.getUserByEmail.mockResolvedValue(null);
+    req.params = { email: 'notfound@example.com' };
+    req.query = {};
+    await controller['listCapturesByUserEmail'](req as Request, res as Response);
+    expect(res.status).toHaveBeenCalledWith(404);
+    expect(res.json).toHaveBeenCalledWith({ error: 'User not found' });
+  });
+
+  it('should list only unmigrated captures by email when migrated=false', async () => {
+    mockUserService.getUserByEmail.mockResolvedValue({
+      id: 'user1',
+      email: 'test@example.com',
+      username: 'testuser',
+      emailVerified: false,
+      password: null,
+      lastLoginAt: null,
+      createdAt: new Date('2025-10-16T00:00:00Z'),
+      updatedAt: new Date('2025-10-16T00:00:00Z')
+    });
+    mockCaptureService.listCapturesByUser.mockResolvedValue([{
+      id: '1',
+      userId: 'user1',
+      rawText: 'test',
+      createdAt: new Date('2025-10-16T00:00:00Z'),
+      updatedAt: new Date('2025-10-16T00:00:00Z'),
+      migratedDate: null
+    }]);
+    req.params = { email: 'test@example.com' };
+    req.query = { migrated: 'false' };
+    await controller['listCapturesByUserEmail'](req as Request, res as Response);
+    expect(mockCaptureService.listCapturesByUser).toHaveBeenCalledWith('user1', true);
+    expect(res.json).toHaveBeenCalledWith(expect.arrayContaining([expect.any(Object)]));
   });
 });
