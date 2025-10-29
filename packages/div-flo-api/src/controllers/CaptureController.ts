@@ -183,6 +183,13 @@ export class CaptureController {
    *           type: string
    *         required: true
    *         description: User ID to filter captures
+   *       - in: query
+   *         name: migrated
+   *         schema:
+   *           type: string
+   *           enum: [true, false]
+   *         required: false
+   *         description: Filter by migration status (false = only unmigrated)
    *     responses:
    *       200:
    *         description: List of captures
@@ -201,7 +208,8 @@ export class CaptureController {
    */
   private async listCapturesByUser(req: Request, res: Response): Promise<void> {
     try {
-      const captures = await this.captureService.listCapturesByUser(req.params.userId);
+      const onlyUnmigrated = req.query.migrated === 'false';
+      const captures = await this.captureService.listCapturesByUser(req.params.userId, onlyUnmigrated);
       res.json(captures);
     } catch (error: any) {
       res.status(400).json({ error: error.message });

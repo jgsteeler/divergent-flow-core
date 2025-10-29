@@ -42,7 +42,11 @@ export class CaptureRepository implements ICaptureRepository {
     await this.prisma.capture.delete({ where: { id } });
   }
 
-  async listByUser(userId: string): Promise<Capture[]> {
-    return this.prisma.capture.findMany({ where: { userId } });
+  async listByUser(userId: string, onlyUnmigrated?: boolean): Promise<Capture[]> {
+    const where: any = { userId };
+    if (onlyUnmigrated) {
+      where.migratedDate = null;
+    }
+    return this.prisma.capture.findMany({ where });
   }
 }
