@@ -1,6 +1,6 @@
 {
   "name": "@div-flo/api",
-  "version": "0.1.12",
+  "version": "0.1.13",
   "description": "API server for Divergent Flow",
   "main": "dist/src/server.js",
   "scripts": {
