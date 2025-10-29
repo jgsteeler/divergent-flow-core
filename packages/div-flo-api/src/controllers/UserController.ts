@@ -19,10 +19,11 @@ export class UserController {
   private setupRoutes(): void {
     this.router.get('/', this.listUsers.bind(this));
     this.router.post('/', this.createUser.bind(this));
+    this.router.get('/email/:email', this.getUserByEmail.bind(this));
+    this.router.get('/username/:username', this.getUserByUsername.bind(this));
     this.router.get('/:id', this.getUser.bind(this));
     this.router.put('/:id', this.updateUser.bind(this));
     this.router.delete('/:id', this.deleteUser.bind(this));
-    this.router.get('/email/:email', this.getUserByEmail.bind(this));
   }
 
   /**
@@ -167,6 +168,43 @@ export class UserController {
 
   /**
    * @swagger
+   * /v1/user/username/{username}:
+   *   get:
+   *     summary: Get user by username
+   *     tags: [User]
+   *     parameters:
+   *       - in: path
+   *         name: username
+   *         schema:
+   *           type: string
+   *         required: true
+   *         description: Username
+   *     responses:
+   *       200:
+   *         description: User found
+   *         content:
+   *           application/json:
+   *             schema:
+   *               $ref: '#/components/schemas/User'
+   *       404:
+   *         description: User not found
+   *         content:
+   *           application/json:
+   *             schema:
+   *               $ref: '#/components/schemas/Error'
+   */
+  private async getUserByUsername(req: Request, res: Response): Promise<void> {
+    const { username } = req.params;
+    const user = await this.userService.getUserByUsername(username);
+    if (user) {
+      res.json(user);
+    } else {
+      res.status(404).json({ error: 'User not found' });
+    }
+  }
+
+  /**
+   * @swagger
    * /v1/user/{id}:
    *   put:
    *     summary: Update a user
@@ -250,10 +288,84 @@ export class UserController {
    *           type: string
    *         email:
    *           type: string
-   *         name:
+   *         username:
    *           type: string
+   *         emailVerified:
+   *           type: boolean
+   *         password:
+   *           type: string
+   *           nullable: true
+   *         lastLoginAt:
+   *           type: string
+   *           format: date-time
+   *           nullable: true
+   *         createdAt:
+   *           type: string
+   *           format: date-time
+   *         updatedAt:
+   *           type: string
+   *           format: date-time
+   *         profile:
+   *           $ref: '#/components/schemas/UserProfile'
+   *           nullable: true
+   *         oauthAccounts:
+   *           type: array
+   *           items:
+   *             $ref: '#/components/schemas/OAuthAccount'
+   *     UserProfile:
+   *       type: object
+   *       properties:
+   *         id:
+   *           type: string
+   *         userId:
+   *           type: string
+   *         displayName:
+   *           type: string
+   *           nullable: true
+   *         firstName:
+   *           type: string
+   *           nullable: true
+   *         lastName:
+   *           type: string
+   *           nullable: true
+   *         avatarUrl:
+   *           type: string
+   *           nullable: true
+   *         bio:
+   *           type: string
+   *           nullable: true
+   *         timezone:
+   *           type: string
+   *           nullable: true
    *         preferences:
    *           type: object
+   *           nullable: true
+   *         createdAt:
+   *           type: string
+   *           format: date-time
+   *         updatedAt:
+   *           type: string
+   *           format: date-time
+   *     OAuthAccount:
+   *       type: object
+   *       properties:
+   *         id:
+   *           type: string
+   *         userId:
+   *           type: string
+   *         provider:
+   *           type: string
+   *         providerAccountId:
+   *           type: string
+   *         tokenType:
+   *           type: string
+   *           nullable: true
+   *         scope:
+   *           type: string
+   *           nullable: true
+   *         expiresAt:
+   *           type: string
+   *           format: date-time
    *           nullable: true
    *         createdAt:
    *           type: string

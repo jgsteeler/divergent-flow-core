@@ -15,8 +15,8 @@ describe('CaptureRepository (integration)', () => {
       data: {
         id: 'user-1',
         email: 'test@example.com',
-        name: 'Test User',
-        preferences: Prisma.JsonNull,
+        username: 'testuser',
+        emailVerified: false,
       },
     });
     userId = user.id;
