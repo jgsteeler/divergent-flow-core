@@ -66,7 +66,16 @@ describe('CaptureService', () => {
       ];
       repo.listByUser.mockResolvedValue(captures);
       const result = await service.listCapturesByUser('u1');
-      expect(repo.listByUser).toHaveBeenCalledWith('u1');
+      expect(repo.listByUser).toHaveBeenCalledWith('u1', undefined);
+      expect(result).toBe(captures);
+    });
+    it('calls repo.listByUser with onlyUnmigrated flag', async () => {
+      const captures: Capture[] = [
+        { id: 'c1', userId: 'u1', rawText: 'foo', createdAt: new Date(), updatedAt: new Date(), migratedDate: null },
+      ];
+      repo.listByUser.mockResolvedValue(captures);
+      const result = await service.listCapturesByUser('u1', true);
+      expect(repo.listByUser).toHaveBeenCalledWith('u1', true);
       expect(result).toBe(captures);
     });
   });

@@ -5,5 +5,5 @@ export interface ICaptureService {
   getCaptureById(id: string): Promise<Capture | null>;
   updateCapture(capture: Capture): Promise<Capture>;
   deleteCapture(id: string): Promise<void>;
-  listCapturesByUser(userId: string): Promise<Capture[]>;
+  listCapturesByUser(userId: string, onlyUnmigrated?: boolean): Promise<Capture[]>;
 }

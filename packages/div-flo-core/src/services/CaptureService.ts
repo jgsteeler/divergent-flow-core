@@ -28,8 +28,8 @@ export class CaptureService implements ICaptureService {
     return this.repo.delete(id);
   }
 
-  async listCapturesByUser(userId: string): Promise<Capture[]> {
+  async listCapturesByUser(userId: string, onlyUnmigrated?: boolean): Promise<Capture[]> {
     if (!userId) throw new Error('userId is required');
-    return this.repo.listByUser(userId);
+    return this.repo.listByUser(userId, onlyUnmigrated);
   }
 }
