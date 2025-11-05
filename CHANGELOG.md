@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.2.0](https://github.com/jgsteeler/divergent-flow-core/compare/v0.1.12...v0.2.0) (2025-11-05)
+
+
+### Features
+
+* add CONTRIBUTING.md and link from README ([#3](https://github.com/jgsteeler/divergent-flow-core/issues/3)) ([6b15236](https://github.com/jgsteeler/divergent-flow-core/commit/6b15236abbc7c1337d5c18b9bb617904730847c2))
+
+
+### Bug Fixes
+
+* **ci:** add release-pr command to bootstrap release-please ([#6](https://github.com/jgsteeler/divergent-flow-core/issues/6)) ([5ede575](https://github.com/jgsteeler/divergent-flow-core/commit/5ede575cf05e7341108fa6c8b452e2588c710bc6))
+* **ci:** remove unnecessary command and config from release-please action ([#7](https://github.com/jgsteeler/divergent-flow-core/issues/7)) ([60388bc](https://github.com/jgsteeler/divergent-flow-core/commit/60388bc49d36eabd7f0d42198b87e4e43f17fac5))
+* **ci:** update release-please action ([#5](https://github.com/jgsteeler/divergent-flow-core/issues/5)) ([5c3858b](https://github.com/jgsteeler/divergent-flow-core/commit/5c3858b8e9eb10ce1b80afd79c0b9bdf10d1b442))
+
 ### [0.1.13](https://github.com/jgsteeler/divergent-flow-core/compare/v0.1.12...v0.1.13) (2025-10-29)
 
 
