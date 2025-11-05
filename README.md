@@ -45,3 +45,9 @@ docker-compose up
 - **@div-flo/models** - Shared interfaces and DTOs
 - **@div-flo/core** - Business logic and services
 - **@div-flo/api** - REST API and controllers
+
+## License
+
+This project is dual-licensed. The core functionalities are released under the **GNU Affero General Public License v3.0 (AGPLv3)**. This ensures that any modifications or services built upon the open-source core remain open and accessible to the community. For details, see the [LICENSE](LICENSE) file.
+
+For commercial use-cases, such as integration into proprietary software or for use in a commercial SaaS offering without the copyleft requirements of the AGPLv3, a **commercial license** is available. Please contact the project maintainers for more information on obtaining a commercial license.

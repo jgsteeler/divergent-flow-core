@@ -8,28 +8,19 @@ describe('CaptureRepository (integration)', () => {
   let testCapture: Capture;
   let userId: string;
 
-  beforeAll(async () => {
-    // Optionally run migrations here
+  beforeEach(async () => {
     await prisma.user.deleteMany();
+    await prisma.capture.deleteMany();
     const user = await prisma.user.create({
       data: {
         id: 'user-1',
         email: 'test@example.com',
-        name: 'Test User',
-        preferences: Prisma.JsonNull,
+        username: 'testuser',
+        emailVerified: false,
       },
     });
     userId = user.id;
-  });
 
-  afterAll(async () => {
-    await prisma.capture.deleteMany();
-    await prisma.user.deleteMany();
-    await prisma.$disconnect();
-  });
-
-  beforeEach(async () => {
-    await prisma.capture.deleteMany();
     testCapture = await prisma.capture.create({
       data: {
         id: 'cap-1',
@@ -38,6 +29,15 @@ describe('CaptureRepository (integration)', () => {
         migratedDate: null,
       },
     });
+  });
+
+  afterEach(async () => {
+    await prisma.capture.deleteMany();
+    await prisma.user.deleteMany();
+  });
+
+  afterAll(async () => {
+    await prisma.$disconnect();
   });
 
   it('creates a capture', async () => {

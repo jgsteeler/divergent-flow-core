@@ -29,6 +29,7 @@ describe('VersionRepository', () => {
       const mockPath = '/mock/path/to/package.json';
       
       mockedPath.join.mockReturnValue(mockPath);
+      mockedFs.existsSync.mockReturnValue(true);
       mockedFs.readFileSync.mockReturnValue(JSON.stringify(mockPackageJson));
 
       // Act
@@ -49,9 +50,7 @@ describe('VersionRepository', () => {
       const mockPath = '/mock/path/to/package.json';
       
       mockedPath.join.mockReturnValue(mockPath);
-      mockedFs.readFileSync.mockImplementation(() => {
-        throw new Error('ENOENT: no such file or directory');
-      });
+      mockedFs.existsSync.mockReturnValue(false);
 
       // Spy on console.warn to verify error logging
       const consoleSpy = jest.spyOn(console, 'warn').mockImplementation();
@@ -66,8 +65,7 @@ describe('VersionRepository', () => {
       
       // Verify error was logged
       expect(consoleSpy).toHaveBeenCalledWith(
-        'Could not read package version:',
-        expect.any(Error)
+        'Could not find package.json while resolving version'
       );
 
       consoleSpy.mockRestore();
@@ -78,6 +76,7 @@ describe('VersionRepository', () => {
       const mockPath = '/mock/path/to/package.json';
       
       mockedPath.join.mockReturnValue(mockPath);
+      mockedFs.existsSync.mockReturnValue(true);
       mockedFs.readFileSync.mockReturnValue('invalid json content');
 
       // Spy on console.warn to verify error logging
@@ -91,7 +90,10 @@ describe('VersionRepository', () => {
       expect(result.service).toBe('divergent-flow-core');
       
       // Verify error was logged
-      expect(consoleSpy).toHaveBeenCalled();
+      expect(consoleSpy).toHaveBeenCalledWith(
+        'Could not read package version:',
+        expect.any(Error)
+      );
 
       consoleSpy.mockRestore();
     });
@@ -100,6 +102,7 @@ describe('VersionRepository', () => {
       // Arrange
       const mockPackageJson = { version: '2.0.0' };
       mockedPath.join.mockReturnValue('/constructed/path');
+      mockedFs.existsSync.mockReturnValue(true);
       mockedFs.readFileSync.mockReturnValue(JSON.stringify(mockPackageJson));
 
       // Act
@@ -107,8 +110,8 @@ describe('VersionRepository', () => {
 
       // Assert
       expect(mockedPath.join).toHaveBeenCalledWith(
-        expect.stringContaining('repositories'),
-        '../../package.json'
+        expect.any(String),
+        'package.json'
       );
     });
 
@@ -116,6 +119,7 @@ describe('VersionRepository', () => {
       // Arrange
       const mockPackageJson = { version: '1.0.0' };
       mockedPath.join.mockReturnValue('/mock/path');
+      mockedFs.existsSync.mockReturnValue(true);
       mockedFs.readFileSync.mockReturnValue(JSON.stringify(mockPackageJson));
 
       const beforeTime = new Date();

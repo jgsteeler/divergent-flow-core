@@ -5,5 +5,5 @@ export interface ICaptureRepository {
   findById(id: string): Promise<Capture | null>;
   update(capture: Capture): Promise<Capture>;
   delete(id: string): Promise<void>;
-  listByUser(userId: string): Promise<Capture[]>;
+  listByUser(userId: string, onlyUnmigrated?: boolean): Promise<Capture[]>;
 }

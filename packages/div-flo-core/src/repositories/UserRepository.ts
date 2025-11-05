@@ -1,6 +1,6 @@
 import { injectable, inject } from "tsyringe";
 import { IUserRepository } from "@div-flo/models";
-import { User, PrismaClient, Prisma } from "@prisma/client";
+import { User, PrismaClient } from "@prisma/client";
 
 @injectable()
 export class UserRepository implements IUserRepository {
@@ -15,30 +15,58 @@ export class UserRepository implements IUserRepository {
       data: {
         id: user.id,
         email: user.email,
-        name: user.name,
-        preferences:
-          user.preferences === null ? Prisma.JsonNull : user.preferences,
-        // createdAt and updatedAt are handled by Prisma defaults
+        username: user.username,
+        password: user.password,
+        emailVerified: user.emailVerified,
+      },
+      include: {
+        profile: true,
       },
     });
   }
   async findById(id: string): Promise<User | null> {
-    return this.prisma.user.findUnique({ where: { id } });
+    return this.prisma.user.findUnique({ 
+      where: { id },
+      include: {
+        profile: true,
+        oauthAccounts: true,
+      },
+    });
   }
 
   async findByEmail(email: string): Promise<User | null> {
-    return this.prisma.user.findUnique({ where: { email } });
+    return this.prisma.user.findUnique({ 
+      where: { email },
+      include: {
+        profile: true,
+        oauthAccounts: true,
+      },
+    });
+  }
+
+  async findByUsername(username: string): Promise<User | null> {
+    return this.prisma.user.findUnique({ 
+      where: { username },
+      include: {
+        profile: true,
+        oauthAccounts: true,
+      },
+    });
   }
 
   async update(user: User): Promise<User> {
-    // Only update allowed fields
     return this.prisma.user.update({
       where: { id: user.id },
       data: {
         email: user.email,
-        name: user.name,
-        preferences:
-          user.preferences === null ? Prisma.JsonNull : user.preferences,
+        username: user.username,
+        password: user.password,
+        emailVerified: user.emailVerified,
+        lastLoginAt: user.lastLoginAt,
+      },
+      include: {
+        profile: true,
+        oauthAccounts: true,
       },
     });
   }
@@ -48,6 +76,10 @@ export class UserRepository implements IUserRepository {
   }
 
   async list(): Promise<User[]> {
-    return this.prisma.user.findMany();
+    return this.prisma.user.findMany({
+      include: {
+        profile: true,
+      },
+    });
   }
 }
