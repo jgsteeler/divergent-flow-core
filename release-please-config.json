@@ -1,0 +1,21 @@
+{
+  "packages": {
+    "packages/div-flo-api": {
+      "component": "api",
+      "release-type": "node"
+    },
+    "packages/div-flo-core": {
+      "component": "core",
+      "release-type": "node"
+    },
+    "packages/div-flo-models": {
+      "component": "models",
+      "release-type": "node"
+    },
+    ".": {
+      "release-type": "node",
+      "component": "divergent-flow-core",
+      "package-name": "divergent-flow-core"
+    }
+  }
+}
