@@ -21,6 +21,8 @@ export class UserController {
     this.router.post('/', this.createUser.bind(this));
     this.router.get('/email/:email', this.getUserByEmail.bind(this));
     this.router.get('/username/:username', this.getUserByUsername.bind(this));
+    this.router.get('/email/:email', this.getUserByEmail.bind(this));
+    this.router.get('/username/:username', this.getUserByUsername.bind(this));
     this.router.get('/:id', this.getUser.bind(this));
     this.router.put('/:id', this.updateUser.bind(this));
     this.router.delete('/:id', this.deleteUser.bind(this));
