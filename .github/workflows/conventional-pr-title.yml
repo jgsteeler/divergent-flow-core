@@ -34,7 +34,7 @@ jobs:
             revert
           # Allow use of scopes, e.g. `feat(ui): ...`
           # Scopes are allowed by default.
-          # The subject of the PR title should not be empty
-          subjectPattern: .
+          # The subject of the PR title should not be empty.
+          # subjectPattern: .
           # Optional: The subject should not start with a capital letter
           # subjectPatternError: "The subject should not start with a capital letter."

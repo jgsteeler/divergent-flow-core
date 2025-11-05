@@ -40,6 +40,10 @@ docker-compose up
 - Version: `http://localhost:8080/version`
 - Documentation: `http://localhost:8080/api-docs`
 
+## Contributing
+
+We welcome contributions from the community! Please see our [Contributing Guidelines](CONTRIBUTING.md) for more information on how to get started.
+
 ## Architecture
 
 - **@div-flo/models** - Shared interfaces and DTOs
