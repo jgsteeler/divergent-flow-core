@@ -1,9 +1,11 @@
 # Divergent Flow Core - Warp Instructions
 
 ## Project Overview
+
 Backend API and business logic services for the Divergent Flow ADHD-optimized productivity system.
 
 ## Architecture
+
 - **Workspace**: Monorepo with npm workspaces
 - **Packages**:
   - `@div-flo/models` - Shared interfaces and DTOs
@@ -12,22 +14,22 @@ Backend API and business logic services for the Divergent Flow ADHD-optimized pr
 
 ## Quick Development Setup
 
-### Environment Configuration
-```bash
-# Automated setup (recommended)
-./setup-env.sh
+### Environment Configuration (root-only env)
 
-# Manual setup
-cp .env.example .env
-# Edit .env with your preferences
+```bash
+# Create a local env file at the repo root
+cp .env.example .env.local
+# Edit .env.local with your preferences
 ```
 
 ### Available Environments
-- **Local Development** (`.env.local`) - No Docker, debug logging
-- **Local Production** (`.env`) - Docker, production-like testing
-- **CI/CD Environments** (`.env.dev`, `.env.staging`, `.env.prod`)
+
+- **Local Development** (`.env.local` at repo root) - No Docker, debug logging
+- **Container/Runtime**: pass env at runtime; do not rely on package-level files
+- **CI/CD**: env provided by pipeline; Dockerfile used for builds
 
 ### Development Commands
+
 ```bash
 # Install dependencies
 npm install
@@ -51,6 +53,7 @@ npm run clean
 ## Docker Development
 
 ### Docker Commands
+
 ```bash
 # Build and start all services
 npm run docker:up
@@ -72,16 +75,19 @@ npm run docker:build
 ```
 
 ### Docker Environments
+
 - **Production**: `divergent-flow-api` service
 - **Development**: `div-flo-api-dev` service with hot reload
 
 ## API Endpoints
+
 - **Health Check**: `http://localhost:8080/health`
 - **Version Info**: `http://localhost:8080/version`  
 - **API Documentation**: `http://localhost:8080/api-docs`
 - **OpenAPI Spec**: `http://localhost:8080/openapi.json`
 
 ## Testing
+
 ```bash
 # Run all tests
 npm test
@@ -93,6 +99,7 @@ npm test --workspace=packages/div-flo-api
 ## Release Process
 
 ### Version Management
+
 ```bash
 # Patch release (0.1.11 → 0.1.12)
 npm run release
@@ -105,6 +112,7 @@ npm run release:major
 ```
 
 ### Release Workflow
+
 1. **Feature Development**: Work on feature branch using git-flow
 2. **Testing**: Run `npm test` and `npm run lint`
 3. **Build Verification**: Run `npm run build` to ensure no type errors
@@ -114,13 +122,16 @@ npm run release:major
 ## Package Development
 
 ### Adding New Packages
+
 1. Create new package in `packages/` directory
 2. Add to workspace in root `package.json`
 3. Update `@div-flo/*` dependencies as needed
 4. Add build/test scripts
 
 ### Inter-Package Dependencies
+
 Use workspace references:
+
 ```json
 {
   "dependencies": {
@@ -133,6 +144,7 @@ Use workspace references:
 ## Common Issues & Solutions
 
 ### Port 8080 Already in Use
+
 ```bash
 # Find process using port
 lsof -i :8080
@@ -142,6 +154,7 @@ kill -9 <PID>
 ```
 
 ### Docker Issues
+
 ```bash
 # Clean restart
 npm run docker:down
@@ -151,6 +164,7 @@ npm run docker:up
 ```
 
 ### Workspace Dependencies
+
 ```bash
 # Reinstall all workspace dependencies
 npm run clean
@@ -161,9 +175,11 @@ npm run build
 ```
 
 ### Database Issues (if using Prisma)
+
 Check packages with `migration_lock.toml` for database setup.
 
 ## Development Standards
+
 - **Node.js**: >= 18.0.0
 - **TypeScript**: ^5.9.3
 - **Testing**: Jest with ts-jest
@@ -172,6 +188,7 @@ Check packages with `migration_lock.toml` for database setup.
 - **Containerization**: Docker Compose with multi-environment support
 
 ## Git Flow Integration
+
 ```bash
 # Start new feature
 git flow feature start api-enhancement
@@ -191,6 +208,7 @@ git flow release finish 0.2.0
 ```
 
 ## Monitoring & Debugging
+
 - **Health Endpoint**: Monitor service status
 - **Logs**: Use `npm run docker:logs` for containerized debugging
 - **Development**: Use `npm run dev` with debugger attachment

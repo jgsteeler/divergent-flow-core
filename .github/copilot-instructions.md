@@ -15,7 +15,7 @@
 - **Testing**: Jest with global setup/teardown scripts to create and destroy a temp Postgres DB for integration tests. All tests run via `npm test` at the monorepo root.
 
 ## Developer Workflows
-- **Setup**: Run `./setup-env.sh` or copy `.env.example` to `.env` and customize.
+- **Setup**: Copy `.env.example` to `.env.local` at the repo root and customize. Env files live only at the root; packages do not carry their own `.env` files.
 - **Build**: `npm run build` (at root) builds all packages.
 - **Test**: `npm test` (at root) runs all workspace tests, including integration tests with a real Postgres DB.
 - **CI/CD**: GitHub Actions pipeline runs all workspace tests on every push, spins up Postgres, and runs `npx prisma generate` before tests.
@@ -27,6 +27,3 @@
 
 ## Examples
 - **Integration Test DB Setup**: See `jest-global-setup.js` and `jest-global-teardown.js` in `div-flo-core`.
-
-## ADHD Planning/Backlog
-- For planning, backlog, and prioritization, follow the detailed ADHD-friendly workflow in the project-level `.github/copilot-instructions.md` and `planning/` docs.

@@ -1,3 +1,5 @@
+// Centralized env loading from monorepo root (harmless if unused in models)
+import './loadEnv';
 // DTOs
 export * from './dto/VersionInfo';
 

@@ -15,13 +15,13 @@ This project is optimized for running locally without Docker during development.
 
 Optional: Docker Desktop if you personally run containers locally. Any docker-compose files you create will be ignored by git.
 
-### 1) Environment setup
+### 1) Environment setup (centralized at repo root)
 
 ```bash
 cp .env.example .env.local
 ```
 
-Edit `.env.local` and set at minimum:
+Edit `.env.local` at the monorepo root and set at minimum:
 
 ```dotenv
 DATABASE_URL=postgresql://divergent:divergentpw@localhost:5432/div-flo-data-dev
@@ -89,6 +89,13 @@ If you override `PORT` in `.env.local`, adjust the URLs accordingly.
 - CI runs Node 20 and a Postgres service; no docker-compose is used in pipelines.
 - The provided `Dockerfile` is for building deployable images in CI/CD.
 - docker-compose files are intentionally not tracked; create your own local compose if you prefer containers for development.
+- Environment files live only at the monorepo root. Packages do not carry their own `.env` files. The API loads env from the root automatically in development via a small loader.
+
+### Environment loading behavior
+
+- Priority when running locally: `.env.local` → `.env.{NODE_ENV}` → `.env`
+- You can force a specific file by setting `ENV_FILE` (relative to repo root or absolute)
+- In Docker/containers (`DOCKER=true`), env files are not auto-loaded; pass env at runtime instead.
 
 ## Architecture
 
