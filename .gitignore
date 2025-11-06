@@ -100,3 +100,13 @@ packages/*/.env.*
 # Swagger generated files
 swagger.json
 .env.debug
+
+# Local-only Docker Compose files (intentionally untracked)
+docker-compose.yml
+docker-compose.yaml
+docker-compose.*.yml
+docker-compose.*.yaml
+compose.yml
+compose.yaml
+compose.*.yml
+compose.*.yaml
