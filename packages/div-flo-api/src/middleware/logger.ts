@@ -1,4 +1,6 @@
 import winston from 'winston';
+import fs from 'fs';
+import path from 'path';
 import morgan from 'morgan';
 import { Request, Response, NextFunction } from 'express';
 
@@ -45,7 +47,30 @@ const getLogDirectory = (): string => {
   }
 };
 
-const logDirectory = getLogDirectory();
+// Determine a writable log directory with safe fallback for local dev
+function ensureWritableDir(dir: string): { ok: boolean; dir: string } {
+  try {
+    // Normalize and create recursively if needed
+    const normalized = path.resolve(dir);
+    fs.mkdirSync(normalized, { recursive: true });
+    return { ok: true, dir: normalized };
+  } catch {
+    return { ok: false, dir };
+  }
+}
+
+let resolvedLogDirectory = getLogDirectory();
+let ensured = ensureWritableDir(resolvedLogDirectory);
+
+if (!ensured.ok) {
+  // Fallback to project-local logs directory when primary is not writable (e.g., /var/log on macOS)
+  const fallback = './logs';
+  ensured = ensureWritableDir(fallback);
+  resolvedLogDirectory = ensured.dir;
+  console.warn(`⚠️ Log directory not writable: ${resolvedLogDirectory}. Falling back to: ${resolvedLogDirectory}`);
+}
+
+const logDirectory = resolvedLogDirectory;
 
 // Log initialization info to console (before Winston is configured)
 console.log(`📝 Logging configured - Directory: ${logDirectory}`);

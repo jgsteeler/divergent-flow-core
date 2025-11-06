@@ -1,8 +1,5 @@
-// Only load dotenv in local development
-if (process.env.NODE_ENV !== 'production' && process.env.NODE_ENV !== 'docker' && process.env.DOCKER !== 'true') {
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  require('dotenv').config();
-}
+// Centralized env loading from monorepo root (no package-level .env files)
+import './loadEnv';
 
 // External dependencies
 import express from 'express';
