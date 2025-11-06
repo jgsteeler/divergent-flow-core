@@ -98,26 +98,20 @@ npm test --workspace=packages/div-flo-api
 
 ## Release Process
 
-### Version Management
+This repo uses GitHub Release Please to manage versioning and releases for the root and each package.
 
-```bash
-# Patch release (0.1.11 → 0.1.12)
-npm run release
+### How it works
 
-# Minor release (0.1.11 → 0.2.0)
-npm run release:minor
+- Conventional commits drive version bumps and CHANGELOG entries.
+- On changes to `main`, Release Please opens/updates a release PR per component (see `release-please-config.json`).
+- Merging a release PR creates a GitHub Release and tags; packages can be published by CI steps as needed.
 
-# Major release (0.1.11 → 1.0.0)
-npm run release:major
-```
+### Developer workflow
 
-### Release Workflow
-
-1. **Feature Development**: Work on feature branch using git-flow
-2. **Testing**: Run `npm test` and `npm run lint`
-3. **Build Verification**: Run `npm run build` to ensure no type errors
-4. **Release**: Use semantic versioning commands above
-5. **Sync Versions**: `npm run sync-versions` (runs automatically)
+1. Develop on a feature branch; use conventional commits (feat:, fix:, chore:, docs:, etc.).
+2. Open a PR into `main`; CI runs tests.
+3. After merge, Release Please will open/refresh a release PR.
+4. Review the generated CHANGELOG and version in the release PR; merge it when ready.
 
 ## Package Development
 
@@ -201,10 +195,7 @@ npm run lint # Check code style
 # Finish feature
 git flow feature finish api-enhancement
 
-# Create release
-git flow release start 0.2.0
-npm run release:minor  # Updates version and CHANGELOG
-git flow release finish 0.2.0
+# Create a release is handled by Release Please via PRs; no local release commands needed.
 ```
 
 ## Monitoring & Debugging
