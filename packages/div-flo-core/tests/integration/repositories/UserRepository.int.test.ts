@@ -16,10 +16,13 @@ describe('UserRepository (integration)', () => {
   });
 
   beforeEach(async () => {
-    await prisma.capture.deleteMany(); // Clean up dependent records first
-    await prisma.oAuthAccount.deleteMany();
-    await prisma.userProfile.deleteMany();
-    await prisma.user.deleteMany();
+    // Clean slate in a single transaction to respect FK order and avoid partial cleanup
+    await prisma.$transaction([
+      prisma.capture.deleteMany(), // dependent records first
+      prisma.oAuthAccount.deleteMany(),
+      prisma.userProfile.deleteMany(),
+      prisma.user.deleteMany(),
+    ]);
     testUser = await prisma.user.create({
       data: {
         id: 'user-1',
