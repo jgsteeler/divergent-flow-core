@@ -1,0 +1,6 @@
+{
+  ".": "0.1.13",
+  "packages/div-flo-api": "0.1.13",
+  "packages/div-flo-core": "0.1.13",
+  "packages/div-flo-models": "0.1.13"
+}
