@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.3.0](https://github.com/jgsteeler/divergent-flow-core/compare/v0.2.0...v0.3.0) (2025-11-07)
+
+
+### Features
+
+* enhance logging setup with writable directory fallback and update release process documentation ([#11](https://github.com/jgsteeler/divergent-flow-core/issues/11)) ([0fe183c](https://github.com/jgsteeler/divergent-flow-core/commit/0fe183c88f603336ac4813b6c4edd5f662760fa4))
+
+
+### Bug Fixes
+
+* **tests:** fix the tests ([#15](https://github.com/jgsteeler/divergent-flow-core/issues/15)) ([c1f313d](https://github.com/jgsteeler/divergent-flow-core/commit/c1f313dd08d8652ec5e8ee7d88ca761f93aff2fd))
+
 ## [0.2.0](https://github.com/jgsteeler/divergent-flow-core/compare/v0.1.12...v0.2.0) (2025-11-05)
 
 
