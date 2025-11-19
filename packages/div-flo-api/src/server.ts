@@ -78,17 +78,23 @@ app.use(responseLogger);
 
 app.use(express.json());
 
-// Swagger UI
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-// Serve OpenAPI JSON spec at /openapi.json (not under /api-docs to avoid Swagger UI shadowing)
-app.get('/openapi.json', (req, res) => {
-  res.setHeader('Content-Type', 'application/json');
-  res.send(swaggerSpec);
-});
+// Swagger UI (disabled by default in production unless explicitly enabled)
+const enableSwagger = process.env.ENABLE_SWAGGER === 'true' || process.env.NODE_ENV !== 'production';
+if (enableSwagger) {
+  app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+  // Serve OpenAPI JSON spec at /openapi.json (not under /api-docs to avoid Swagger UI shadowing)
+  app.get('/openapi.json', (req, res) => {
+    res.setHeader('Content-Type', 'application/json');
+    res.send(swaggerSpec);
+  });
+}
 
-// Root route - redirect to API docs
+// Root route - in non-prod, redirect to Swagger; in prod, show a minimal status
 app.get('/', (req, res) => {
-  res.redirect('/api-docs');
+  if (enableSwagger) {
+    return res.redirect('/api-docs');
+  }
+  return res.status(200).json({ service: 'divergent-flow-api', status: 'ok' });
 });
 
 // API Routes
