@@ -78,17 +78,23 @@ app.use(responseLogger);
 
 app.use(express.json());
 
-// Swagger UI
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-// Serve OpenAPI JSON spec at /openapi.json (not under /api-docs to avoid Swagger UI shadowing)
-app.get('/openapi.json', (req, res) => {
-  res.setHeader('Content-Type', 'application/json');
-  res.send(swaggerSpec);
-});
+// Swagger UI (disabled by default in production unless explicitly enabled)
+const enableSwagger = process.env.ENABLE_SWAGGER === 'true' || process.env.NODE_ENV !== 'production';
+if (enableSwagger) {
+  app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+  // Serve OpenAPI JSON spec at /openapi.json (not under /api-docs to avoid Swagger UI shadowing)
+  app.get('/openapi.json', (req, res) => {
+    res.setHeader('Content-Type', 'application/json');
+    res.send(swaggerSpec);
+  });
+}
 
-// Root route - redirect to API docs
+// Root route - in non-prod, redirect to Swagger; in prod, show a minimal status
 app.get('/', (req, res) => {
-  res.redirect('/api-docs');
+  if (enableSwagger) {
+    return res.redirect('/api-docs');
+  }
+  return res.status(200).json({ service: 'divergent-flow-api', status: 'ok' });
 });
 
 // API Routes
@@ -124,6 +130,23 @@ app.get('/health', (req, res) => {
   res.json({ status: 'ok', service: 'divergent-flow-api' });
 });
 
+// Alias for k8s/Cloudflare/Gateway convention consistency
+/**
+ * @swagger
+ * /healthz:
+ *   get:
+ *     summary: Health check (alias)
+ *     description: Alias route for health status, equivalent to /health
+ *     tags:
+ *       - Health
+ *     responses:
+ *       200:
+ *         description: Service is healthy
+ */
+app.get('/healthz', (req, res) => {
+  res.json({ status: 'ok', service: 'divergent-flow-api' });
+});
+
 // Error logging middleware (must be after routes)
 app.use(errorLogger);
 
@@ -141,12 +164,12 @@ app.listen(port, () => {
   if (isDocker) {
     console.log(`📦 Docker container - Internal port: ${port}, External port: ${externalPort}`);
     console.log(`🔗 Access externally at:`);
-    console.log(`   Health check: http://localhost:${externalPort}/health`);
+    console.log(`   Health check: http://localhost:${externalPort}/healthz`);
     console.log(`   Version endpoint: http://localhost:${externalPort}/version`);
     console.log(`   API documentation: http://localhost:${externalPort}/api-docs`);
   } else {
     console.log(`💻 Local development:`);
-    console.log(`   Health check: http://localhost:${port}/health`);
+    console.log(`   Health check: http://localhost:${port}/healthz`);
     console.log(`   Version endpoint: http://localhost:${port}/version`);
     console.log(`   API documentation: http://localhost:${port}/api-docs`);
   }

@@ -73,8 +73,8 @@ export function configureDI(): void {
   container.register<AuthProvider>("AuthProvider", {
     useFactory: () => new KeycloakAuthProvider(
       process.env.OIDC_ISSUER_URL!,
-      process.env.OIDC_AUDIENCE!,
-      process.env.OIDC_JWKS_URL!
+      process.env.OIDC_AUDIENCE || '',
+      process.env.OIDC_JWKS_URL
     ),
   });
 }

@@ -167,7 +167,7 @@ export const requestLogger = morgan(morganFormat, {
   },
   skip: (req: Request) => {
     // Skip health check and static asset requests
-    return req.url === '/health' || req.url === '/favicon.ico';
+    return req.url === '/health' || req.url === '/healthz' || req.url === '/favicon.ico';
   }
 });
 
