@@ -4,13 +4,19 @@ import { AuthProvider, UserInfo } from './AuthProvider';
 export class KeycloakAuthProvider implements AuthProvider {
   private jwks: ReturnType<typeof createRemoteJWKSet> | null = null;
   private issuer: string;
-  private audience: string;
+  private audiences: string[];
   private jwksUrl: string;
 
-  constructor(issuer: string, audience: string, jwksUrl: string) {
+  constructor(issuer: string, audience: string, jwksUrl?: string) {
     this.issuer = issuer;
-    this.audience = audience;
-    this.jwksUrl = jwksUrl;
+    this.audiences = (audience || '')
+      .split(',')
+      .map(a => a.trim())
+      .filter(Boolean);
+    // Allow explicit JWKS URL via env; else derive from issuer (Keycloak standard path)
+    this.jwksUrl = (jwksUrl && jwksUrl.trim().length > 0)
+      ? jwksUrl
+      : `${issuer.replace(/\/$/, '')}/protocol/openid-connect/certs`;
   }
 
   private getJWKSet(): ReturnType<typeof createRemoteJWKSet> {
@@ -24,7 +30,7 @@ export class KeycloakAuthProvider implements AuthProvider {
     try {
       const { payload }: JWTVerifyResult = await jwtVerify(token, this.getJWKSet(), {
         issuer: this.issuer,
-        audience: this.audience,
+        audience: this.audiences.length > 0 ? this.audiences : undefined,
       });
 
       return {
