@@ -16,6 +16,10 @@ import type { VersionController as VCType } from './controllers/VersionControlle
 import type { CaptureController as CCType } from './controllers/CaptureController';
 import type { UserController as UCType } from './controllers/UserController';
 
+// Auth
+import { AuthProvider } from './auth/AuthProvider';
+import { createAuthMiddleware } from './auth/authMiddleware';
+
 let VersionController: typeof VCType;
 let CaptureController: typeof CCType;
 let UserController: typeof UCType;
@@ -37,6 +41,10 @@ configureDI();
 const versionController = container.resolve(VersionController);
 const captureController = container.resolve(CaptureController);
 const userController = container.resolve(UserController);
+
+// Auth
+const authProvider = container.resolve<AuthProvider>('AuthProvider');
+const authMiddleware = createAuthMiddleware(authProvider);
 
 // Express app setup
 const app = express();
@@ -85,8 +93,8 @@ app.get('/', (req, res) => {
 
 // API Routes
 app.use('/v1/version', versionController.getRouter());
-app.use('/v1/capture', captureController.getRouter());
-app.use('/v1/user', userController.getRouter());
+app.use('/v1/capture', authMiddleware, captureController.getRouter());
+app.use('/v1/user', authMiddleware, userController.getRouter());
 
 // Health check (kept in server.ts as it's infrastructure)
 /**

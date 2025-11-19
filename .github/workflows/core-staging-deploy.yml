@@ -1,0 +1,38 @@
+name: Core Staging Deploy
+
+on:
+  push:
+    branches: [develop]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    concurrency:
+      group: core-staging-deploy
+      cancel-in-progress: true
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Flyctl
+        uses: superfly/flyctl-actions/setup-flyctl@master
+
+      - name: Deploy to Fly Staging
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_STAGING_TOKEN }}
+        run: |
+          flyctl deploy -c fly-staging.toml --remote-only --verbose
+          flyctl status -a divergent-flow-core-staging || true
+
+      - name: Post-Deploy Health Checks
+        run: |
+          echo "Checking /healthz and /version endpoints"
+          curl -s https://divergent-flow-core-staging.fly.dev/healthz || exit 1
+          curl -s https://divergent-flow-core-staging.fly.dev/version || exit 1
+
+      - name: Emit Summary
+        run: |
+          echo "### Core Staging Deploy" >> $GITHUB_STEP_SUMMARY
+          echo "App: divergent-flow-core-staging" >> $GITHUB_STEP_SUMMARY
+          echo "Deployed commit: $GITHUB_SHA" >> $GITHUB_STEP_SUMMARY
+          echo "Health endpoints checked." >> $GITHUB_STEP_SUMMARY

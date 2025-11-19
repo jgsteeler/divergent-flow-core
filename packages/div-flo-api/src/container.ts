@@ -31,6 +31,10 @@ import { PrismaClient } from '@prisma/client';
 import { CaptureController } from "./controllers/CaptureController";
 import { UserController } from "./controllers/UserController";
 
+// Auth
+import { AuthProvider } from "./auth/AuthProvider";
+import { KeycloakAuthProvider } from "./auth/KeycloakAuthProvider";
+
 // Configure DI container
 export function configureDI(): void {
   // --- Repository registrations ---
@@ -63,6 +67,15 @@ export function configureDI(): void {
   });
   container.register<UserController>("UserController", {
     useClass: UserController,
+  });
+
+  // --- Auth registrations ---
+  container.register<AuthProvider>("AuthProvider", {
+    useFactory: () => new KeycloakAuthProvider(
+      process.env.OIDC_ISSUER_URL!,
+      process.env.OIDC_AUDIENCE!,
+      process.env.OIDC_JWKS_URL!
+    ),
   });
 }
 
