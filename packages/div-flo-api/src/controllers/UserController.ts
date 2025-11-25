@@ -19,6 +19,7 @@ export class UserController {
   private setupRoutes(): void {
     this.router.get('/', this.listUsers.bind(this));
     this.router.post('/', this.createUser.bind(this));
+    this.router.post('/provision-oidc', this.provisionFromOIDC.bind(this));
     this.router.get('/email/:email', this.getUserByEmail.bind(this));
     this.router.get('/username/:username', this.getUserByUsername.bind(this));
     this.router.get('/email/:email', this.getUserByEmail.bind(this));
@@ -90,6 +91,124 @@ export class UserController {
       const user = await this.userService.createUser(req.body);
       res.status(201).json(user);
     } catch (error: any) {
+      res.status(400).json({ error: error.message });
+    }
+  }
+
+  /**
+   * @swagger
+   * /v1/user/provision-oidc:
+   *   post:
+   *     summary: Provision user from OIDC claims (create or update)
+   *     tags: [User]
+   *     requestBody:
+   *       required: true
+   *       content:
+   *         application/json:
+   *           schema:
+   *             type: object
+   *             required:
+   *               - sub
+   *               - email
+   *             properties:
+   *               sub:
+   *                 type: string
+   *                 description: OIDC subject identifier (user ID from identity provider)
+   *               email:
+   *                 type: string
+   *               email_verified:
+   *                 type: boolean
+   *               preferred_username:
+   *                 type: string
+   *               name:
+   *                 type: string
+   *               given_name:
+   *                 type: string
+   *               family_name:
+   *                 type: string
+   *     responses:
+   *       200:
+   *         description: User provisioned (created or updated)
+   *         content:
+   *           application/json:
+   *             schema:
+   *               $ref: '#/components/schemas/User'
+   *       400:
+   *         description: Validation error
+   *         content:
+   *           application/json:
+   *             schema:
+   *               $ref: '#/components/schemas/Error'
+   */
+  private async provisionFromOIDC(req: Request, res: Response): Promise<void> {
+    try {
+      const { sub, email, email_verified, preferred_username, name, given_name, family_name } = req.body;
+
+      if (!sub || !email) {
+        res.status(400).json({ error: 'sub and email are required' });
+        return;
+      }
+
+      // Check if user already exists with this OIDC provider account
+      const existingUser = await this.userService.getUserByOAuthAccount('keycloak', sub);
+      
+      if (existingUser) {
+        // Update last login time
+        const updated = await this.userService.updateUser({ 
+          id: existingUser.id, 
+          lastLoginAt: new Date() 
+        });
+        res.json(updated);
+        return;
+      }
+
+      // Check if user exists by email (might have been created via different method)
+      let user = await this.userService.getUserByEmail(email);
+
+      if (user) {
+        // Link OIDC account to existing user
+        await this.userService.createOAuthAccount({
+          userId: user.id,
+          provider: 'keycloak',
+          providerAccountId: sub,
+        });
+        // Update last login
+        user = await this.userService.updateUser({ 
+          id: user.id, 
+          lastLoginAt: new Date() 
+        });
+      } else {
+        // Create new user with OIDC account
+        const username = preferred_username || email.split('@')[0];
+        user = await this.userService.createUser({
+          email,
+          username,
+          emailVerified: email_verified || false,
+          password: null, // OAuth users don't have passwords
+          lastLoginAt: new Date(),
+        });
+
+        // Create OAuth account link
+        await this.userService.createOAuthAccount({
+          userId: user.id,
+          provider: 'keycloak',
+          providerAccountId: sub,
+        });
+
+        // Create user profile with name info
+        if (name || given_name || family_name) {
+          await this.userService.createUserProfile({
+            userId: user.id,
+            displayName: name,
+            firstName: given_name,
+            lastName: family_name,
+          });
+        }
+      }
+
+      res.json(user);
+    } catch (error: any) {
+      console.error('Error provisioning user from OIDC:', error);
       res.status(400).json({ error: error.message });
     }
   }
