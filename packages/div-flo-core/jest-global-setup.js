@@ -11,20 +11,30 @@ const testDbName = `div_flo_test_${uuidv4().replace(/-/g, '')}`;
 const testDbUrl = baseDbUrl.replace(/\/(postgres|template1|postgresql|[a-zA-Z0-9_\-]+)$/, `/${testDbName}`);
 
 module.exports = async () => {
-  // 1. Create the test DB
-  const client = new Client({ connectionString: baseDbUrl });
-  await client.connect();
-  await client.query(`CREATE DATABASE "${testDbName}";`);
-  await client.end();
+  try {
+    // 1. Create the test DB
+    const client = new Client({ connectionString: baseDbUrl });
+    await client.connect();
+    await client.query(`CREATE DATABASE "${testDbName}";`);
+    await client.end();
 
-  // 2. Run Prisma migrations on the new DB
-  // Use schema from div-flo-models
-  const schemaPath = path.resolve(__dirname, '../div-flo-models/prisma/schema.prisma');
-  execSync(`DATABASE_URL='${testDbUrl}' npx prisma migrate deploy --schema "${schemaPath}"`, { stdio: 'inherit' });
+    // 2. Run Prisma migrations on the new DB
+    // Use schema from div-flo-models
+    const schemaPath = path.resolve(__dirname, '../div-flo-models/prisma/schema.prisma');
+    execSync(`DATABASE_URL='${testDbUrl}' npx prisma migrate deploy --schema "${schemaPath}"`, { stdio: 'inherit' });
 
-  // 3. Write the test DB URL to a temp file for teardown
-  fs.writeFileSync(path.join(__dirname, 'test-db-url.txt'), testDbUrl);
+    // 3. Write the test DB URL to a temp file for teardown
+    fs.writeFileSync(path.join(__dirname, 'test-db-url.txt'), testDbUrl);
 
-  // 4. Set DATABASE_URL for the test process
-  process.env.DATABASE_URL = testDbUrl;
+    // 4. Set DATABASE_URL for the test process
+    process.env.DATABASE_URL = testDbUrl;
+  } catch (error) {
+    console.warn('⚠️  Warning: Could not connect to Postgres database.');
+    console.warn('Database-dependent tests will be skipped.');
+    console.warn('To run all tests, ensure Postgres is running at:', baseDbUrl);
+    console.warn('Error:', error.message);
+    // Set a flag to indicate DB is not available
+    process.env.DATABASE_URL = 'postgres://unavailable';
+    process.env.DB_UNAVAILABLE = 'true';
+  }
 };

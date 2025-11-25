@@ -1,8 +1,10 @@
 import 'reflect-metadata';
-import { PrismaClient, Capture, Prisma } from '@prisma/client';
+import { PrismaClient, Capture } from '@prisma/client';
 import { CaptureRepository } from '../../../src/repositories/CaptureRepository';
 
-describe('CaptureRepository (integration)', () => {
+const skipIfNoDb = process.env.DB_UNAVAILABLE === 'true' ? describe.skip : describe;
+
+skipIfNoDb('CaptureRepository (integration)', () => {
   const prisma = new PrismaClient();
   const repo = new CaptureRepository(prisma);
   let testCapture: Capture;

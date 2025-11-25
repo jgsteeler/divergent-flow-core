@@ -7,7 +7,7 @@
   "scripts": {
     "build": "tsc",
     "dev": "nodemon --exec ts-node src/index.ts",
-    "test": "jest --runInBand",
+    "test": "NODE_OPTIONS='--localstorage-file=./.jest-localstorage' jest --runInBand",
     "lint": "eslint src/**/*.ts",
     "clean": "rm -rf dist"
   },
