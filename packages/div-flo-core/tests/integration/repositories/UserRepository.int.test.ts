@@ -2,7 +2,9 @@ import 'reflect-metadata';
 import { PrismaClient, User, Prisma } from '@prisma/client';
 import { UserRepository } from '../../../src/repositories/UserRepository';
 
-describe('UserRepository (integration)', () => {
+const skipIfNoDb = process.env.DB_UNAVAILABLE === 'true' ? describe.skip : describe;
+
+skipIfNoDb('UserRepository (integration)', () => {
   const prisma = new PrismaClient();
   const repo = new UserRepository(prisma);
   let testUser: User;

@@ -86,6 +86,11 @@ packages/*/tests/**/*.d.ts.map
 tmp/
 temp/
 
+# Jest test artifacts
+.jest-localstorage
+test-db-url.txt
+packages/*/test-db-url.txt
+
 # Package manager lock files (keep package-lock.json but ignore alternatives)
 yarn.lock
 pnpm-lock.yaml

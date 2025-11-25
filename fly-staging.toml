@@ -1,0 +1,29 @@
+# fly.toml app configuration file generated for divergent-flow-core-staging on 2025-11-16T18:04:32-06:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = 'divergent-flow-core-staging'
+primary_region = 'iad'
+
+[build]
+
+[deploy]
+  # Apply Prisma migrations to the Neon DB before switching traffic
+  release_command = "npx prisma migrate deploy --schema=packages/div-flo-models/prisma/schema.prisma"
+
+[env]
+  ENABLE_SWAGGER = "true"
+
+[http_service]
+  internal_port = 3001
+  force_https = true
+  auto_stop_machines = 'stop'
+  auto_start_machines = true
+  min_machines_running = 1
+  processes = ['app']
+
+[[vm]]
+  memory = '1gb'
+  cpu_kind = 'shared'
+  cpus = 1
