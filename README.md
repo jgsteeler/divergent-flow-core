@@ -1,5 +1,7 @@
 # divergent-flow-core
 
+[![Core Staging Deploy](https://github.com/jgsteeler/divergent-flow-core/actions/workflows/core-staging-deploy.yml/badge.svg?branch=develop)](https://github.com/jgsteeler/divergent-flow-core/actions/workflows/core-staging-deploy.yml)
+
 Core business logic and API services for Divergent Flow — ADHD-optimized productivity system.
 
 ## Local Development (no Docker)
