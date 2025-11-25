@@ -30,5 +30,9 @@
   },
   "dependencies": {
     "dotenv": "^17.2.3"
+  },
+  "overrides": {
+    "prisma": "6.17.1",
+    "@prisma/client": "6.17.1"
   }
 }

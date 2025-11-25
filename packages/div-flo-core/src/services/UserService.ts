@@ -1,14 +1,18 @@
 import { injectable, inject } from 'tsyringe';
 import { IUserRepository, IUserService } from '@div-flo/models';
-import { User } from '@prisma/client';
+import { User, OAuthAccount, UserProfile, PrismaClient } from '@prisma/client';
 
 @injectable()
 export class UserService implements IUserService {
+  private prisma: PrismaClient;
+
   constructor(
     @inject('IUserRepository') private repo: IUserRepository
-  ) {}
+  ) {
+    this.prisma = new PrismaClient();
+  }
 
-  async createUser(user: User): Promise<User> {
+  async createUser(user: Partial<User> & { email: string; username: string }): Promise<User> {
     if (!user.email || !user.username) {
       throw new Error('email and username are required');
     }
@@ -21,7 +25,7 @@ export class UserService implements IUserService {
     if (existingByUsername) {
       throw new Error('User with this username already exists');
     }
-    return this.repo.create(user);
+    return this.prisma.user.create({ data: user as any });
   }
 
   async getUserById(id: string): Promise<User | null> {
@@ -36,9 +40,27 @@ export class UserService implements IUserService {
     return this.repo.findByUsername(username);
   }
 
-  async updateUser(user: User): Promise<User> {
+  async getUserByOAuthAccount(provider: string, providerAccountId: string): Promise<User | null> {
+    const oauthAccount = await this.prisma.oAuthAccount.findUnique({
+      where: {
+        provider_providerAccountId: {
+          provider,
+          providerAccountId,
+        },
+      },
+      include: {
+        user: true,
+      },
+    });
+    return oauthAccount?.user || null;
+  }
+
+  async updateUser(user: Partial<User> & { id: string }): Promise<User> {
     if (!user.id) throw new Error('id is required');
-    return this.repo.update(user);
+    return this.prisma.user.update({
+      where: { id: user.id },
+      data: user,
+    });
   }
 
   async deleteUser(id: string): Promise<void> {
@@ -47,5 +69,17 @@ export class UserService implements IUserService {
 
   async listUsers(): Promise<User[]> {
     return this.repo.list();
+  }
+
+  async createOAuthAccount(account: Partial<OAuthAccount> & { userId: string; provider: string; providerAccountId: string }): Promise<OAuthAccount> {
+    return this.prisma.oAuthAccount.create({
+      data: account as any,
+    });
+  }
+
+  async createUserProfile(profile: Partial<UserProfile> & { userId: string }): Promise<UserProfile> {
+    return this.prisma.userProfile.create({
+      data: profile as any,
+    });
   }
 }
