@@ -41,8 +41,8 @@ COPY --from=build /build/package.json ./package.json
 # Copy root .env file for API config
 COPY --from=build /build/package-lock.json ./package-lock.json
 COPY --from=build /build/packages/div-flo-models/prisma /app/packages/div-flo-models/prisma
-# Install only production deps and add Prisma CLI for migrations in release_command
-RUN npm install --production && npm install prisma --no-save
+# Install only production deps (prisma will be installed via overrides)
+RUN npm install --omit=dev && npm install prisma@6.17.1 --no-save
 RUN npx prisma generate --schema=packages/div-flo-models/prisma/schema.prisma
 
 RUN mkdir -p /var/log/divergent-flow && chown -R apiuser:nodejs /var/log/divergent-flow
