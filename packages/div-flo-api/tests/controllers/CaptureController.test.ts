@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { CaptureController } from '../../src/controllers/CaptureController';
 import { ICaptureService, IUserService } from '@div-flo/models';

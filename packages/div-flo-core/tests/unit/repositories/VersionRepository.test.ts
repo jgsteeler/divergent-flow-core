@@ -54,7 +54,7 @@ describe('VersionRepository', () => {
       mockedFs.existsSync.mockReturnValue(false);
 
       // Spy on console.warn to verify error logging
-      const consoleSpy = vi.spyOn(console, 'warn').mockImplementation();
+      const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
       // Act
       const result = await versionRepository.getVersionInfo();
@@ -81,7 +81,7 @@ describe('VersionRepository', () => {
       mockedFs.readFileSync.mockReturnValue('invalid json content');
 
       // Spy on console.warn to verify error logging
-      const consoleSpy = vi.spyOn(console, 'warn').mockImplementation();
+      const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
       // Act
       const result = await versionRepository.getVersionInfo();

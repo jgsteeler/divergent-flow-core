@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import { Request, Response } from 'express';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { VersionController } from '../../../src/controllers/VersionController';

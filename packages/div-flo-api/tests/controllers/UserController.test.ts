@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { UserController } from '../../src/controllers/UserController';
 import { IUserService } from '@div-flo/models';

@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { VersionController } from '../../src/controllers/VersionController';
 import { IVersionService } from '@div-flo/models';
