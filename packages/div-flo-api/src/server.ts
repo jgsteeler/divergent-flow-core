@@ -80,7 +80,9 @@ app.use(cors({
             }
           }
         }
-      } catch {}
+      } catch (err) {
+        logger.debug('[CORS] Error parsing origin', { origin, error: err });
+      }
     }
     
     if (allow) {
