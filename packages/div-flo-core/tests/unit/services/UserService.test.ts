@@ -16,7 +16,11 @@ const mockPrismaClient = {
 };
 
 vi.mock('@prisma/client', () => ({
-  PrismaClient: vi.fn(() => mockPrismaClient),
+  PrismaClient: class {
+    constructor() {
+      return mockPrismaClient;
+    }
+  },
 }));
 
 import { UserService } from '../../../src/services/UserService';

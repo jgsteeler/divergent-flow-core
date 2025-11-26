@@ -15,7 +15,6 @@ export default defineConfig({
         'tests/',
         '**/*.test.ts',
         '**/*.config.*',
-        'src/server.ts', // Exclude server startup file from coverage
       ],
     },
   },
