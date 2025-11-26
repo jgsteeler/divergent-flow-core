@@ -25,11 +25,10 @@ vi.mock('@prisma/client', () => ({
 
 import { UserService } from '../../../src/services/UserService';
 import { IUserRepository } from '@div-flo/models/src/interfaces/IUserRepository';
-import { User } from '@prisma/client';
+import { User, OAuthAccount, UserProfile } from '@prisma/client';
 
 describe('UserService', () => {
   let repo: any;
-  let prisma: any;
   let service: UserService;
 
   beforeEach(() => {
@@ -40,12 +39,14 @@ describe('UserService', () => {
       findById: vi.fn(),
       findByEmail: vi.fn(),
       findByUsername: vi.fn(),
+      findByOAuthAccount: vi.fn(),
       update: vi.fn(),
       delete: vi.fn(),
       list: vi.fn(),
+      createOAuthAccount: vi.fn(),
+      createUserProfile: vi.fn(),
     };
-    prisma = mockPrismaClient;
-    service = new UserService(repo, prisma);
+    service = new UserService(repo);
   });
 
   it('throws if email or username is missing on create', async () => {
@@ -73,9 +74,9 @@ describe('UserService', () => {
     const data = { id: 'u1', email: 'foo@example.com', username: 'foo', emailVerified: false, createdAt: new Date(), updatedAt: new Date() } as User;
     repo.findByEmail.mockResolvedValue(null);
     repo.findByUsername.mockResolvedValue(null);
-    mockPrismaClient.user.create.mockResolvedValue(data);
+    repo.create.mockResolvedValue(data);
     const result = await service.createUser(data);
-    expect(mockPrismaClient.user.create).toHaveBeenCalled();
+    expect(repo.create).toHaveBeenCalled();
     expect(result).toBe(data);
   });
 
@@ -103,9 +104,9 @@ describe('UserService', () => {
 
   it.skip('calls prisma.user.update with valid data', async () => {
     const data = { id: 'u1', email: 'foo@example.com', username: 'foo', emailVerified: false, createdAt: new Date(), updatedAt: new Date() } as User;
-    mockPrismaClient.user.update.mockResolvedValue(data);
+    repo.update.mockResolvedValue(data);
     const result = await service.updateUser(data);
-    expect(mockPrismaClient.user.update).toHaveBeenCalled();
+    expect(repo.update).toHaveBeenCalled();
     expect(result).toBe(data);
   });
 
@@ -113,5 +114,29 @@ describe('UserService', () => {
     repo.delete.mockResolvedValue();
     await service.deleteUser('u1');
     expect(repo.delete).toHaveBeenCalledWith('u1');
+  });
+
+  it('calls repo.findByOAuthAccount', async () => {
+    const user = { id: 'u1', email: 'foo@example.com', username: 'foo' } as User;
+    repo.findByOAuthAccount.mockResolvedValue(user);
+    const result = await service.getUserByOAuthAccount('google', '123');
+    expect(repo.findByOAuthAccount).toHaveBeenCalledWith('google', '123');
+    expect(result).toBe(user);
+  });
+
+  it('calls repo.createOAuthAccount', async () => {
+    const account = { userId: 'u1', provider: 'google', providerAccountId: '123' } as OAuthAccount;
+    repo.createOAuthAccount.mockResolvedValue(account);
+    const result = await service.createOAuthAccount({ userId: 'u1', provider: 'google', providerAccountId: '123' });
+    expect(repo.createOAuthAccount).toHaveBeenCalledWith({ userId: 'u1', provider: 'google', providerAccountId: '123' });
+    expect(result).toBe(account);
+  });
+
+  it('calls repo.createUserProfile', async () => {
+    const profile = { userId: 'u1', bio: 'Test bio' } as UserProfile;
+    repo.createUserProfile.mockResolvedValue(profile);
+    const result = await service.createUserProfile({ userId: 'u1', bio: 'Test bio' });
+    expect(repo.createUserProfile).toHaveBeenCalledWith({ userId: 'u1', bio: 'Test bio' });
+    expect(result).toBe(profile);
   });
 });
