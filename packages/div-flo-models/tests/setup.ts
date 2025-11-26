@@ -1,5 +1,7 @@
+import { beforeEach, vi } from 'vitest';
+
 // Global test setup for models tests
 beforeEach(() => {
-  jest.clearAllMocks();
-  jest.resetAllMocks();
+  vi.clearAllMocks();
+  vi.resetAllMocks();
 });

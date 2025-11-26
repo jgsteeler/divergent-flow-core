@@ -1,22 +1,23 @@
 import 'reflect-metadata';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { VersionRepository } from '../../../src/repositories/VersionRepository';
 import * as fs from 'fs';
 import * as path from 'path';
 
 // Mock fs module
-jest.mock('fs');
-const mockedFs = fs as jest.Mocked<typeof fs>;
+vi.mock('fs');
+const mockedFs = fs as any;
 
 // Mock path module
-jest.mock('path');
-const mockedPath = path as jest.Mocked<typeof path>;
+vi.mock('path');
+const mockedPath = path as any;
 
 describe('VersionRepository', () => {
   let versionRepository: VersionRepository;
 
   beforeEach(() => {
     versionRepository = new VersionRepository();
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe('getVersionInfo', () => {
@@ -53,7 +54,7 @@ describe('VersionRepository', () => {
       mockedFs.existsSync.mockReturnValue(false);
 
       // Spy on console.warn to verify error logging
-      const consoleSpy = jest.spyOn(console, 'warn').mockImplementation();
+      const consoleSpy = vi.spyOn(console, 'warn').mockImplementation();
 
       // Act
       const result = await versionRepository.getVersionInfo();
@@ -80,7 +81,7 @@ describe('VersionRepository', () => {
       mockedFs.readFileSync.mockReturnValue('invalid json content');
 
       // Spy on console.warn to verify error logging
-      const consoleSpy = jest.spyOn(console, 'warn').mockImplementation();
+      const consoleSpy = vi.spyOn(console, 'warn').mockImplementation();
 
       // Act
       const result = await versionRepository.getVersionInfo();

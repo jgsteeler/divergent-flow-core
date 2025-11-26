@@ -1,29 +1,30 @@
 import { Request, Response } from 'express';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { VersionController } from '../../../src/controllers/VersionController';
 import { IVersionService, VersionInfo } from '@div-flo/models';
 
 // Mock version service
-const mockVersionService: jest.Mocked<IVersionService> = {
-  getVersion: jest.fn(),
+const mockVersionService: any = {
+  getVersion: vi.fn(),
 };
 
 // Mock Express Request and Response
 const mockRequest = {} as Request;
 const mockResponse = {
-  json: jest.fn(),
-  status: jest.fn(),
-} as unknown as jest.Mocked<Response>;
+  json: vi.fn(),
+  status: vi.fn(),
+} as any;
 
 // Setup chainable status method
-(mockResponse.status as jest.Mock).mockImplementation(() => mockResponse);
+(mockResponse.status as any).mockImplementation(() => mockResponse);
 
 describe('VersionController (mounted at /v1/version)', () => {
   let versionController: VersionController;
 
   beforeEach(() => {
     versionController = new VersionController(mockVersionService);
-    jest.clearAllMocks();
-    (mockResponse.status as jest.Mock).mockImplementation(() => mockResponse);
+    vi.clearAllMocks();
+    (mockResponse.status as any).mockImplementation(() => mockResponse);
   });
 
   describe('constructor', () => {
@@ -94,8 +95,8 @@ describe('VersionController (mounted at /v1/version)', () => {
 
   describe('dependency injection', () => {
     it('should work with different version service implementations', () => {
-      const alternativeService: jest.Mocked<IVersionService> = {
-        getVersion: jest.fn(),
+      const alternativeService: any = {
+        getVersion: vi.fn(),
       };
       const controller = new VersionController(alternativeService);
       expect(controller).toBeDefined();

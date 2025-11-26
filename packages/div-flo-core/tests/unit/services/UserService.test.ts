@@ -1,21 +1,22 @@
 import 'reflect-metadata';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 
 // Mock PrismaClient BEFORE importing UserService
 const mockPrismaClient = {
   user: {
-    create: jest.fn(),
-    update: jest.fn(),
+    create: vi.fn(),
+    update: vi.fn(),
   },
   oAuthAccount: {
-    findUnique: jest.fn(),
+    findUnique: vi.fn(),
   },
   userProfile: {
-    create: jest.fn(),
+    create: vi.fn(),
   },
 };
 
-jest.mock('@prisma/client', () => ({
-  PrismaClient: jest.fn(() => mockPrismaClient),
+vi.mock('@prisma/client', () => ({
+  PrismaClient: vi.fn(() => mockPrismaClient),
 }));
 
 import { UserService } from '../../../src/services/UserService';
@@ -23,20 +24,20 @@ import { IUserRepository } from '@div-flo/models/src/interfaces/IUserRepository'
 import { User } from '@prisma/client';
 
 describe('UserService', () => {
-  let repo: jest.Mocked<IUserRepository>;
+  let repo: any;
   let service: UserService;
 
   beforeEach(() => {
     // Reset mocks
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     repo = {
-      create: jest.fn(),
-      findById: jest.fn(),
-      findByEmail: jest.fn(),
-      findByUsername: jest.fn(),
-      update: jest.fn(),
-      delete: jest.fn(),
-      list: jest.fn(),
+      create: vi.fn(),
+      findById: vi.fn(),
+      findByEmail: vi.fn(),
+      findByUsername: vi.fn(),
+      update: vi.fn(),
+      delete: vi.fn(),
+      list: vi.fn(),
     };
     service = new UserService(repo);
   });
