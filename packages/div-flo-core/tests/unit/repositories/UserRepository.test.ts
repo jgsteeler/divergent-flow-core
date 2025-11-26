@@ -4,6 +4,12 @@ import { UserRepository } from '../../../src/repositories/UserRepository';
 import { IUserRepository } from '@div-flo/models';
 import { PrismaClient } from '@prisma/client';
 
+// Mock tsyringe container
+vi.mock('tsyringe', () => ({
+  inject: () => () => {},
+  injectable: () => () => {},
+}));
+
 describe('UserRepository', () => {
   let userRepository: UserRepository;
   let mockPrisma: any;
@@ -28,9 +34,7 @@ describe('UserRepository', () => {
     };
 
     // Create repository with mocked Prisma
-    userRepository = new UserRepository();
-    // Inject the mock Prisma client
-    (userRepository as any).prisma = mockPrisma;
+    userRepository = new UserRepository(mockPrisma);
 
     vi.clearAllMocks();
   });
@@ -44,6 +48,9 @@ describe('UserRepository', () => {
         username: 'testuser',
         password: 'hashedpassword',
         emailVerified: false,
+        createdAt: new Date('2025-10-16T00:00:00Z'),
+        updatedAt: new Date('2025-10-16T00:00:00Z'),
+        lastLoginAt: null,
       };
 
       const expectedUser = {
@@ -248,6 +255,8 @@ describe('UserRepository', () => {
         password: 'newpassword',
         emailVerified: true,
         lastLoginAt: new Date(),
+        createdAt: new Date('2025-10-16T00:00:00Z'),
+        updatedAt: new Date('2025-10-16T00:00:00Z'),
       };
 
       const expectedUser = {
