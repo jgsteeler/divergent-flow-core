@@ -10,7 +10,8 @@
     "build": "tsc -b -v",
     "build:clean": "tsc -b --clean && tsc -b -v",
     "dev": "cd packages/div-flo-api && nodemon src/server.ts",
-    "test": "npm test --workspaces",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "lint": "npm run lint --workspaces",
     "clean": "tsc -b --clean",
     "install:all": "npm install",
@@ -18,12 +19,11 @@
     "sync-versions": "node scripts/sync-versions.js"
   },
   "devDependencies": {
-    "@types/jest": "^30.0.0",
     "@types/node": "^20.0.0",
     "nodemon": "^3.0.0",
-    "ts-jest": "^29.4.5",
     "ts-node": "^10.9.0",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.4"
   },
   "engines": {
     "node": ">=18.0.0"
