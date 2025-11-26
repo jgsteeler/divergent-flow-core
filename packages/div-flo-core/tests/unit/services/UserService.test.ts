@@ -29,6 +29,7 @@ import { User } from '@prisma/client';
 
 describe('UserService', () => {
   let repo: any;
+  let prisma: any;
   let service: UserService;
 
   beforeEach(() => {
@@ -43,7 +44,8 @@ describe('UserService', () => {
       delete: vi.fn(),
       list: vi.fn(),
     };
-    service = new UserService(repo);
+    prisma = mockPrismaClient;
+    service = new UserService(repo, prisma);
   });
 
   it('throws if email or username is missing on create', async () => {

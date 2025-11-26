@@ -4,13 +4,10 @@ import { User, OAuthAccount, UserProfile, PrismaClient } from '@prisma/client';
 
 @injectable()
 export class UserService implements IUserService {
-  private prisma: PrismaClient;
-
   constructor(
-    @inject('IUserRepository') private repo: IUserRepository
-  ) {
-    this.prisma = new PrismaClient();
-  }
+    @inject('IUserRepository') private repo: IUserRepository,
+    @inject('PrismaClient') private prisma: PrismaClient
+  ) {}
 
   async createUser(user: Partial<User> & { email: string; username: string }): Promise<User> {
     if (!user.email || !user.username) {
