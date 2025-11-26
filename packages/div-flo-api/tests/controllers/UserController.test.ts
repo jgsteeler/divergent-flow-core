@@ -1,26 +1,27 @@
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { UserController } from '../../src/controllers/UserController';
 import { IUserService } from '@div-flo/models';
 import { Request, Response } from 'express';
 
 describe('UserController', () => {
   let controller: UserController;
-  let mockService: jest.Mocked<IUserService>;
+  let mockService: any;
   let req: Partial<Request>;
   let res: Partial<Response>;
 
   beforeEach(() => {
     mockService = {
-      createUser: jest.fn(),
-      getUserById: jest.fn(),
-      getUserByEmail: jest.fn(),
-      getUserByUsername: jest.fn(),
-      updateUser: jest.fn(),
-      deleteUser: jest.fn(),
-      listUsers: jest.fn(),
-    } as any;
+      createUser: vi.fn(),
+      getUserById: vi.fn(),
+      getUserByEmail: vi.fn(),
+      getUserByUsername: vi.fn(),
+      updateUser: vi.fn(),
+      deleteUser: vi.fn(),
+      listUsers: vi.fn(),
+    };
     controller = new UserController(mockService);
     req = {};
-    res = { status: jest.fn().mockReturnThis(), json: jest.fn(), send: jest.fn() };
+    res = { status: vi.fn().mockReturnThis(), json: vi.fn(), send: vi.fn() };
   });
 
   it('should create a user', async () => {

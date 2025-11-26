@@ -1,20 +1,21 @@
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { VersionController } from '../../src/controllers/VersionController';
 import { IVersionService } from '@div-flo/models';
 import { Request, Response } from 'express';
 
 describe('VersionController', () => {
   let controller: VersionController;
-  let mockService: jest.Mocked<IVersionService>;
+  let mockService: any;
   let req: Partial<Request>;
   let res: Partial<Response>;
 
   beforeEach(() => {
     mockService = {
-      getVersion: jest.fn(),
-    } as any;
+      getVersion: vi.fn(),
+    };
     controller = new VersionController(mockService);
     req = {};
-    res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
+    res = { status: vi.fn().mockReturnThis(), json: vi.fn() };
   });
 
   it('should get version info', async () => {
