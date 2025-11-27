@@ -74,7 +74,7 @@ describe('UserService', () => {
     const data = { id: 'u1', email: 'foo@example.com', username: 'foo', emailVerified: false, createdAt: new Date(), updatedAt: new Date() } as User;
     repo.findByEmail.mockResolvedValue(null);
     repo.findByUsername.mockResolvedValue(null);
-    repo.create.mockResolvedValue(data);
+    mockPrismaClient.user.create.mockResolvedValue(data);
     const result = await service.createUser(data);
     expect(repo.create).toHaveBeenCalled();
     expect(result).toBe(data);
@@ -104,7 +104,7 @@ describe('UserService', () => {
 
   it.skip('calls prisma.user.update with valid data', async () => {
     const data = { id: 'u1', email: 'foo@example.com', username: 'foo', emailVerified: false, createdAt: new Date(), updatedAt: new Date() } as User;
-    repo.update.mockResolvedValue(data);
+    mockPrismaClient.user.update.mockResolvedValue(data);
     const result = await service.updateUser(data);
     expect(repo.update).toHaveBeenCalled();
     expect(result).toBe(data);
