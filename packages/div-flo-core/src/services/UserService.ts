@@ -1,16 +1,12 @@
 import { injectable, inject } from 'tsyringe';
 import { IUserRepository, IUserService } from '@div-flo/models';
-import { User, OAuthAccount, UserProfile } from '@prisma/client';
+import { User, OAuthAccount, UserProfile} from '@prisma/client';
 
 @injectable()
 export class UserService implements IUserService {
-  private prisma: PrismaClient;
-
   constructor(
     @inject('IUserRepository') private repo: IUserRepository
-  ) {
-    this.prisma = new PrismaClient();
-  }
+  ) {}
 
   async createUser(user: Partial<User> & { email: string; username: string }): Promise<User> {
     if (!user.email || !user.username) {
