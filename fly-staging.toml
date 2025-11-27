@@ -14,6 +14,7 @@ primary_region = 'iad'
 
 [env]
   ENABLE_SWAGGER = "true"
+  CORS_ORIGINS = "*.netlify.app,http://localhost:5173"
 
 [http_service]
   internal_port = 3001

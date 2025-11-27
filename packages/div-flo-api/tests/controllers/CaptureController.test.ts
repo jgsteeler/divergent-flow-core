@@ -1,28 +1,30 @@
+import 'reflect-metadata';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { CaptureController } from '../../src/controllers/CaptureController';
 import { ICaptureService, IUserService } from '@div-flo/models';
 import { Request, Response } from 'express';
 
 describe('CaptureController', () => {
   let controller: CaptureController;
-  let mockCaptureService: jest.Mocked<ICaptureService>;
-  let mockUserService: jest.Mocked<IUserService>;
+  let mockCaptureService: any;
+  let mockUserService: any;
   let req: Partial<Request>;
   let res: Partial<Response>;
 
   beforeEach(() => {
     mockCaptureService = {
-      createCapture: jest.fn(),
-      getCaptureById: jest.fn(),
-      updateCapture: jest.fn(),
-      deleteCapture: jest.fn(),
-      listCapturesByUser: jest.fn(),
-    } as any;
+      createCapture: vi.fn(),
+      getCaptureById: vi.fn(),
+      updateCapture: vi.fn(),
+      deleteCapture: vi.fn(),
+      listCapturesByUser: vi.fn(),
+    };
     mockUserService = {
-      getUserByEmail: jest.fn(),
-    } as any;
+      getUserByEmail: vi.fn(),
+    };
     controller = new CaptureController(mockCaptureService, mockUserService);
     req = {};
-    res = { status: jest.fn().mockReturnThis(), json: jest.fn(), send: jest.fn() };
+    res = { status: vi.fn().mockReturnThis(), json: vi.fn(), send: vi.fn() };
   });
 
   it('should create a capture', async () => {

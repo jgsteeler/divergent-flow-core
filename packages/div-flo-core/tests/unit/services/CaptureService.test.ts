@@ -1,19 +1,20 @@
 import 'reflect-metadata';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { CaptureService } from '../../../src/services/CaptureService';
 import { ICaptureRepository } from '@div-flo/models/src/interfaces/ICaptureRepository';
 import { Capture } from '@prisma/client';
 
 describe('CaptureService', () => {
-  let repo: jest.Mocked<ICaptureRepository>;
+  let repo: any;
   let service: CaptureService;
 
   beforeEach(() => {
     repo = {
-      create: jest.fn(),
-      findById: jest.fn(),
-      update: jest.fn(),
-      delete: jest.fn(),
-      listByUser: jest.fn(),
+      create: vi.fn(),
+      findById: vi.fn(),
+      update: vi.fn(),
+      delete: vi.fn(),
+      listByUser: vi.fn(),
     };
     service = new CaptureService(repo);
   });

@@ -62,7 +62,30 @@ app.use(cors({
     logger.info('[CORS] Allowed Origins', { allowedOrigins });
     // allow requests with no origin (like mobile apps, curl, etc.)
     if (!origin) return callback(null, true);
+    
+    // Allow exact matches or simple wildcard like *.netlify.app
+    let allow = false;
     if (allowedOrigins.includes(origin)) {
+      allow = true;
+    } else {
+      try {
+        const originUrl = new URL(origin);
+        const host = originUrl.hostname;
+        for (const item of allowedOrigins) {
+          if (item.startsWith('*.')) {
+            const suffix = item.slice(2);
+            if (host === suffix || host.endsWith('.' + suffix)) {
+              allow = true;
+              break;
+            }
+          }
+        }
+      } catch (err) {
+        logger.debug('[CORS] Error parsing origin', { origin, error: err });
+      }
+    }
+    
+    if (allow) {
       return callback(null, true);
     } else {
       logger.warn('[CORS] Blocked Origin', { origin });

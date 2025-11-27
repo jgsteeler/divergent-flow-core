@@ -1,7 +1,8 @@
 import 'reflect-metadata';
+import { beforeEach, vi } from 'vitest';
 
 // Global test setup for API tests
 beforeEach(() => {
-  jest.clearAllMocks();
-  jest.resetAllMocks();
+  vi.clearAllMocks();
+  vi.resetAllMocks();
 });
