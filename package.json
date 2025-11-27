@@ -1,6 +1,6 @@
 {
   "name": "divergent-flow-core",
-  "version": "0.2.2",
+  "version": "0.3.0",
   "description": "Core business logic and API services for Divergent Flow - ADHD-optimized productivity system",
   "private": true,
   "workspaces": [
