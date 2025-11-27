@@ -1,11 +1,12 @@
 import 'reflect-metadata';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { VersionService } from '../../../src/services/VersionService';
 import { IVersionRepository } from '@div-flo/models';
 import { VersionInfo } from '@div-flo/models';
 
 // Create mock repository
-const mockVersionRepository: jest.Mocked<IVersionRepository> = {
-  getVersionInfo: jest.fn(),
+const mockVersionRepository: any = {
+  getVersionInfo: vi.fn(),
 };
 
 describe('VersionService (repository contract)', () => {
@@ -13,7 +14,7 @@ describe('VersionService (repository contract)', () => {
 
   beforeEach(() => {
     versionService = new VersionService(mockVersionRepository);
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe('getVersion', () => {

@@ -1,6 +1,6 @@
 import { injectable, inject } from "tsyringe";
 import { IUserRepository } from "@div-flo/models";
-import { User, PrismaClient } from "@prisma/client";
+import { User, OAuthAccount, UserProfile, PrismaClient, Prisma } from "@prisma/client";
 
 @injectable()
 export class UserRepository implements IUserRepository {
@@ -80,6 +80,51 @@ export class UserRepository implements IUserRepository {
       include: {
         profile: true,
       },
+    });
+  }
+
+  async findByOAuthAccount(provider: string, providerAccountId: string): Promise<User | null> {
+    const oauthAccount = await this.prisma.oAuthAccount.findUnique({
+      where: {
+        provider_providerAccountId: {
+          provider,
+          providerAccountId,
+        },
+      },
+      include: {
+        user: true,
+      },
+    });
+    return oauthAccount?.user || null;
+  }
+
+  async createOAuthAccount(account: Partial<OAuthAccount> & { userId: string; provider: string; providerAccountId: string }): Promise<OAuthAccount> {
+    // Map only allowed fields to ensure type safety
+    const data: Prisma.OAuthAccountCreateInput = {
+      user: { connect: { id: account.userId } },
+      provider: account.provider,
+      providerAccountId: account.providerAccountId,
+      accessToken: account.accessToken ?? null,
+      scope: account.scope ?? null,
+      tokenType: account.tokenType ?? null,
+      idToken: account.idToken ?? null,
+    };
+    return this.prisma.oAuthAccount.create({
+      data,
+    });
+  }
+
+  async createUserProfile(profile: Partial<UserProfile> & { userId: string }): Promise<UserProfile> {
+    // Map only allowed fields to ensure type safety
+    const data: Prisma.UserProfileCreateInput = {
+      user: { connect: { id: profile.userId } },
+      firstName: profile.firstName ?? null,
+      lastName: profile.lastName ?? null,
+      bio: profile.bio ?? null,
+      avatarUrl: profile.avatarUrl ?? null,
+    };
+    return this.prisma.userProfile.create({
+      data,
     });
   }
 }

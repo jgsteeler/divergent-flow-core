@@ -14,6 +14,10 @@ primary_region = 'iad'
 
 [env]
   ENABLE_SWAGGER = "true"
+  OIDC_ISSUER_URL = "https://divergent-flow-keycloak.fly.dev/realms/df-staging"
+  OIDC_AUDIENCE = "web-app,cli-app"
+  CORS_ORIGINS = "https://divflow-staging.netlify.app,*.netlify.app,http://localhost:6137"
+  APP_BASE_URL = "https://divergent-flow-core-staging.fly.dev"
 
 [http_service]
   internal_port = 3001

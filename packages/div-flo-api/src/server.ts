@@ -55,6 +55,8 @@ logger.info('[CORS] process.env.CORS_ORIGINS', { origins: process.env.CORS_ORIGI
 
 // Enable CORS for local dev, UI, and Docker
 const allowedOrigins = (process.env.CORS_ORIGINS || 'http://localhost:5173').split(',').map(o => o.trim());
+logger.info('[CORS] Raw CORS_ORIGINS', { raw: process.env.CORS_ORIGINS });
+logger.info('[CORS] Parsed allowedOrigins', { allowedOrigins });
 app.use(cors({
   origin: function (origin, callback) {
     // Log the incoming origin and allowed origins for debugging
@@ -62,7 +64,35 @@ app.use(cors({
     logger.info('[CORS] Allowed Origins', { allowedOrigins });
     // allow requests with no origin (like mobile apps, curl, etc.)
     if (!origin) return callback(null, true);
+    
+    // Allow exact matches or simple wildcard like *.netlify.app
+    let allow = false;
     if (allowedOrigins.includes(origin)) {
+      allow = true;
+      logger.info('[CORS] Exact match allowed', { origin });
+    } else {
+      try {
+        const originUrl = new URL(origin);
+        const host = originUrl.hostname;
+        logger.info('[CORS] Checking wildcard for host', { host });
+        for (const item of allowedOrigins) {
+          logger.info('[CORS] Checking item', { item });
+          if (item.startsWith('*.')) {
+            const suffix = item.slice(2);
+            logger.info('[CORS] Wildcard check', { suffix, host, endsWith: host.endsWith('.' + suffix) });
+            if (host === suffix || host.endsWith('.' + suffix)) {
+              allow = true;
+              logger.info('[CORS] Wildcard match allowed', { origin, item });
+              break;
+            }
+          }
+        }
+      } catch (err) {
+        logger.debug('[CORS] Error parsing origin', { origin, error: err });
+      }
+    }
+    
+    if (allow) {
       return callback(null, true);
     } else {
       logger.warn('[CORS] Blocked Origin', { origin });
