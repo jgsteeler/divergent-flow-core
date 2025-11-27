@@ -1,5 +1,25 @@
 # Changelog
 
+## [0.3.0](https://github.com/jgsteeler/divergent-flow-core/compare/api-v0.2.0...api-v0.3.0) (2025-11-27)
+
+
+### Features
+
+* add OIDC provisioning and user management features ( ([#26](https://github.com/jgsteeler/divergent-flow-core/issues/26)) ([9bcb9df](https://github.com/jgsteeler/divergent-flow-core/commit/9bcb9df830714244eaaa14bcd7f9f240ce7f8a44))
+* release 1.0 ([#23](https://github.com/jgsteeler/divergent-flow-core/issues/23)) ([333140c](https://github.com/jgsteeler/divergent-flow-core/commit/333140ce5c7bb20358de11c478d3edb8d40ac166))
+* **server:** add '/healthz' alias for health check and update logging ([9bcb9df](https://github.com/jgsteeler/divergent-flow-core/commit/9bcb9df830714244eaaa14bcd7f9f240ce7f8a44))
+* **server:** add '/healthz' alias for health check and update logging ([9bcb9df](https://github.com/jgsteeler/divergent-flow-core/commit/9bcb9df830714244eaaa14bcd7f9f240ce7f8a44))
+* **server:** add '/healthz' alias for health check and update logging ([333140c](https://github.com/jgsteeler/divergent-flow-core/commit/333140ce5c7bb20358de11c478d3edb8d40ac166))
+* **server:** add '/healthz' alias for health check and update logging ([333140c](https://github.com/jgsteeler/divergent-flow-core/commit/333140ce5c7bb20358de11c478d3edb8d40ac166))
+
+
+### Bug Fixes
+
+* **logger:** add '/healthz' endpoint for health checks ([9bcb9df](https://github.com/jgsteeler/divergent-flow-core/commit/9bcb9df830714244eaaa14bcd7f9f240ce7f8a44))
+* **logger:** add '/healthz' endpoint for health checks ([9bcb9df](https://github.com/jgsteeler/divergent-flow-core/commit/9bcb9df830714244eaaa14bcd7f9f240ce7f8a44))
+* **logger:** add '/healthz' endpoint for health checks ([333140c](https://github.com/jgsteeler/divergent-flow-core/commit/333140ce5c7bb20358de11c478d3edb8d40ac166))
+* **logger:** add '/healthz' endpoint for health checks ([333140c](https://github.com/jgsteeler/divergent-flow-core/commit/333140ce5c7bb20358de11c478d3edb8d40ac166))
+
 ## [0.2.0](https://github.com/jgsteeler/divergent-flow-core/compare/api-v0.1.13...api-v0.2.0) (2025-11-07)
 
 
