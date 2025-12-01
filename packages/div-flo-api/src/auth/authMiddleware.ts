@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { AuthProvider, UserInfo } from './AuthProvider';
+import { container } from '../container';
 
 declare global {
   namespace Express {
@@ -21,6 +22,17 @@ export function createAuthMiddleware(authProvider: AuthProvider) {
     try {
       const userInfo = await authProvider.validateAccessToken(token);
       req.user = userInfo;
+
+      // Auto-provision or upsert user on every validated request
+      const userService = container.resolve<any>('IUserService');
+      // Upsert user using Auth0 claims
+      await userService.provisionOrUpdateOAuthUser({
+        sub: userInfo.sub,
+        email: userInfo.email,
+        provider: 'auth0',
+        // Add more fields if needed (e.g., name, roles)
+      });
+
       next();
     } catch (error) {
       return res.status(401).json({ error: 'Invalid token' });

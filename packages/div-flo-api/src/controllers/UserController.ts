@@ -150,7 +150,7 @@ export class UserController {
       }
 
       // Check if user already exists with this OIDC provider account
-      const existingUser = await this.userService.getUserByOAuthAccount('keycloak', sub);
+      const existingUser = await this.userService.getUserByOAuthAccount('auth0', sub);
       
       if (existingUser) {
         // Update last login time
@@ -169,7 +169,7 @@ export class UserController {
         // Link OIDC account to existing user
         await this.userService.createOAuthAccount({
           userId: user.id,
-          provider: 'keycloak',
+          provider: 'auth0',
           providerAccountId: sub,
         });
         // Update last login
@@ -191,7 +191,7 @@ export class UserController {
         // Create OAuth account link
         await this.userService.createOAuthAccount({
           userId: user.id,
-          provider: 'keycloak',
+          provider: 'auth0',
           providerAccountId: sub,
         });
 
