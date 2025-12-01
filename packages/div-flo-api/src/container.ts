@@ -33,7 +33,7 @@ import { UserController } from "./controllers/UserController";
 
 // Auth
 import { AuthProvider } from "./auth/AuthProvider";
-import { KeycloakAuthProvider } from "./auth/KeycloakAuthProvider";
+import { Auth0AuthProvider } from "./auth/Auth0AuthProvider";
 
 // Configure DI container
 export function configureDI(): void {
@@ -71,11 +71,7 @@ export function configureDI(): void {
 
   // --- Auth registrations ---
   container.register<AuthProvider>("AuthProvider", {
-    useFactory: () => new KeycloakAuthProvider(
-      process.env.OIDC_ISSUER_URL!,
-      process.env.OIDC_AUDIENCE || '',
-      process.env.OIDC_JWKS_URL
-    ),
+    useFactory: () => new Auth0AuthProvider(),
   });
 }
 
