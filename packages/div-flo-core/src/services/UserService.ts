@@ -18,60 +18,77 @@ export class UserService implements IUserService {
       family_name?: string;
       emailVerified?: boolean;
     }): Promise<User> {
-      if (!sub || !email || !provider) throw new Error('sub, email, and provider are required');
-
-      // 1. Try to find user by OAuth account (provider + sub)
-      let user = await this.getUserByOAuthAccount(provider, sub);
-      if (user) {
-        // Optionally update user info if changed
-        if (email && user.email !== email) {
-          user = await this.updateUser({ id: user.id, email });
-        }
-        // Update last login
-        user = await this.updateUser({ id: user.id, lastLoginAt: new Date() });
-        return user;
+      console.log('[UserService] Provisioning user:', { sub, email, provider, username, name, given_name, family_name, emailVerified });
+      if (!sub || !email || !provider) {
+        console.error('[UserService] Missing required fields:', { sub, email, provider });
+        throw new Error('sub, email, and provider are required');
       }
-
-      // 2. Try to find user by email
-      user = await this.getUserByEmail(email);
-      if (user) {
-        // Link OAuth account if not already linked
-        const existingOAuth = await this.getUserByOAuthAccount(provider, sub);
-        if (!existingOAuth) {
-          await this.createOAuthAccount({
-            userId: user.id,
-            provider,
-            providerAccountId: sub,
-          });
+      try {
+        // 1. Try to find user by OAuth account (provider + sub)
+        let user = await this.getUserByOAuthAccount(provider, sub);
+        if (user) {
+          console.log('[UserService] Found user by OAuth account:', user.id);
+          // Optionally update user info if changed
+          if (email && user.email !== email) {
+            user = await this.updateUser({ id: user.id, email });
+            console.log('[UserService] Updated user email:', user.id);
+          }
+          // Update last login
+          user = await this.updateUser({ id: user.id, lastLoginAt: new Date() });
+          console.log('[UserService] Updated last login:', user.id);
+          return user;
         }
-        // Update last login
-        user = await this.updateUser({ id: user.id, lastLoginAt: new Date() });
-        return user;
-      }
 
-      // 3. Create new user and link OAuth account
-      const finalUsername = username || email.split('@')[0];
-      user = await this.createUser({
-        email,
-        username: finalUsername,
-        emailVerified: emailVerified || false,
-        password: null,
-        lastLoginAt: new Date(),
-      });
-      await this.createOAuthAccount({
-        userId: user.id,
-        provider,
-        providerAccountId: sub,
-      });
-      if (name || given_name || family_name) {
-        await this.createUserProfile({
-          userId: user.id,
-          displayName: name,
-          firstName: given_name,
-          lastName: family_name,
+        // 2. Try to find user by email
+        user = await this.getUserByEmail(email);
+        if (user) {
+          console.log('[UserService] Found user by email:', user.id);
+          // Link OAuth account if not already linked
+          const existingOAuth = await this.getUserByOAuthAccount(provider, sub);
+          if (!existingOAuth) {
+            await this.createOAuthAccount({
+              userId: user.id,
+              provider,
+              providerAccountId: sub,
+            });
+            console.log('[UserService] Linked OAuth account:', { userId: user.id, provider, sub });
+          }
+          // Update last login
+          user = await this.updateUser({ id: user.id, lastLoginAt: new Date() });
+          console.log('[UserService] Updated last login:', user.id);
+          return user;
+        }
+
+        // 3. Create new user and link OAuth account
+        const finalUsername = username || email.split('@')[0];
+        user = await this.createUser({
+          email,
+          username: finalUsername,
+          emailVerified: emailVerified || false,
+          password: null,
+          lastLoginAt: new Date(),
         });
+        console.log('[UserService] Created new user:', user.id);
+        await this.createOAuthAccount({
+          userId: user.id,
+          provider,
+          providerAccountId: sub,
+        });
+        console.log('[UserService] Linked OAuth account to new user:', { userId: user.id, provider, sub });
+        if (name || given_name || family_name) {
+          await this.createUserProfile({
+            userId: user.id,
+            displayName: name,
+            firstName: given_name,
+            lastName: family_name,
+          });
+          console.log('[UserService] Created user profile:', user.id);
+        }
+        return user;
+      } catch (err) {
+        console.error('[UserService] Error during provisioning:', err);
+        throw err;
       }
-      return user;
     }
   constructor(
     @inject('IUserRepository') private repo: IUserRepository
