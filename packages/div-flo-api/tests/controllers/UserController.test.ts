@@ -227,7 +227,7 @@ describe('UserController', () => {
       req.body = { sub: 'user123', email: 'test@example.com' };
       await controller['provisionFromOIDC'](req as Request, res as Response);
 
-      expect(mockService.getUserByOAuthAccount).toHaveBeenCalledWith('keycloak', 'user123');
+      expect(mockService.getUserByOAuthAccount).toHaveBeenCalledWith('auth0', 'user123');
       expect(mockService.updateUser).toHaveBeenCalledWith({
         id: '1',
         lastLoginAt: expect.any(Date)
@@ -261,11 +261,11 @@ describe('UserController', () => {
       req.body = { sub: 'user123', email: 'test@example.com' };
       await controller['provisionFromOIDC'](req as Request, res as Response);
 
-      expect(mockService.getUserByOAuthAccount).toHaveBeenCalledWith('keycloak', 'user123');
+      expect(mockService.getUserByOAuthAccount).toHaveBeenCalledWith('auth0', 'user123');
       expect(mockService.getUserByEmail).toHaveBeenCalledWith('test@example.com');
       expect(mockService.createOAuthAccount).toHaveBeenCalledWith({
         userId: '1',
-        provider: 'keycloak',
+        provider: 'auth0',
         providerAccountId: 'user123'
       });
       expect(mockService.updateUser).toHaveBeenCalledWith({
@@ -316,7 +316,7 @@ describe('UserController', () => {
       });
       expect(mockService.createOAuthAccount).toHaveBeenCalledWith({
         userId: '2',
-        provider: 'keycloak',
+        provider: 'auth0',
         providerAccountId: 'user456'
       });
       expect(mockService.createUserProfile).toHaveBeenCalledWith({
@@ -361,7 +361,7 @@ describe('UserController', () => {
       });
       expect(mockService.createOAuthAccount).toHaveBeenCalledWith({
         userId: '3',
-        provider: 'keycloak',
+        provider: 'auth0',
         providerAccountId: 'user789'
       });
       expect(res.json).toHaveBeenCalledWith(newUser);
@@ -400,7 +400,7 @@ describe('UserController', () => {
       });
       expect(mockService.createOAuthAccount).toHaveBeenCalledWith({
         userId: '4',
-        provider: 'keycloak',
+        provider: 'auth0',
         providerAccountId: 'user999'
       });
       expect(mockService.createUserProfile).not.toHaveBeenCalled();

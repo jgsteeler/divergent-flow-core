@@ -4,10 +4,28 @@ import { User, OAuthAccount, UserProfile} from '@prisma/client';
 
 @injectable()
 export class UserService implements IUserService {
-  
-    constructor(
+      constructor(
     @inject('IUserRepository') private repo: IUserRepository
-  ) {}
+  ) {} 
+  
+  /**
+     * Maps a userId (internal or OAuth provider ID) to the internal userId.
+     * If userId is internal, returns it. If OAuth, looks up and returns internal userId.
+     */
+    async getInternalUserId(userId: string, provider?: string): Promise<string> {
+      if (!userId) throw new Error('userId is required');
+      // Try internal userId first
+      const user = await this.getUserById(userId);
+      if (user) return user.id;
+      // If not found, try as OAuth provider ID
+      if (provider) {
+        const oauthUser = await this.getUserByOAuthAccount(provider, userId);
+        if (oauthUser) return oauthUser.id;
+      }
+      throw new Error('No valid internal userId found for given userId');
+    }
+  
+
   
   /**
      * Provision or update a user from OAuth (Auth0) claims.

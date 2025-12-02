@@ -6,6 +6,7 @@ import { Capture } from '@prisma/client';
 
 describe('CaptureService', () => {
   let repo: any;
+  let userService: any;
   let service: CaptureService;
 
   beforeEach(() => {
@@ -16,20 +17,29 @@ describe('CaptureService', () => {
       delete: vi.fn(),
       listByUser: vi.fn(),
     };
-    service = new CaptureService(repo);
+    userService = {
+      getInternalUserId: vi.fn(),
+      getUserById: vi.fn(),
+      getUserByOAuthAccount: vi.fn(),
+    };
+    service = new CaptureService(repo, userService);
   });
 
   it('throws if userId or rawText is missing on create', async () => {
-    await expect(service.createCapture({ rawText: 'foo' } as any)).rejects.toThrow('userId and rawText are required');
-    await expect(service.createCapture({ userId: 'u1' } as any)).rejects.toThrow('userId and rawText are required');
+    userService.getInternalUserId.mockResolvedValue(undefined);
+    await expect(service.createCapture({ rawText: 'foo' } as any)).rejects.toThrow('Valid userId and rawText are required');
+    await expect(service.createCapture({ userId: 'u1' } as any)).rejects.toThrow('Valid userId and rawText are required');
   });
 
-  it('calls repo.create with valid data', async () => {
-    const data = { id: 'c1', userId: 'u1', rawText: 'foo', createdAt: new Date(), updatedAt: new Date() } as Capture;
-    repo.create.mockResolvedValue(data);
+  it('calls userService.getInternalUserId and repo.create with mapped userId', async () => {
+    const data = { id: 'c1', userId: 'externalId', rawText: 'foo', provider: 'auth0', createdAt: new Date(), updatedAt: new Date() } as any;
+    userService.getInternalUserId.mockResolvedValue('internalId');
+    const expected = { userId: 'internalId', rawText: 'foo', id: 'c1', provider: 'auth0', createdAt: data.createdAt, updatedAt: data.updatedAt };
+    repo.create.mockResolvedValue(expected);
     const result = await service.createCapture(data);
-    expect(repo.create).toHaveBeenCalledWith(data);
-    expect(result).toBe(data);
+    expect(userService.getInternalUserId).toHaveBeenCalledWith('externalId', 'auth0');
+    expect(repo.create).toHaveBeenCalledWith(expected);
+    expect(result).toBe(expected);
   });
 
   it('calls repo.findById', async () => {
