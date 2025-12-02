@@ -4,95 +4,121 @@ import { User, OAuthAccount, UserProfile} from '@prisma/client';
 
 @injectable()
 export class UserService implements IUserService {
-    /**
+  
+    constructor(
+    @inject('IUserRepository') private repo: IUserRepository
+  ) {}
+  
+  /**
      * Provision or update a user from OAuth (Auth0) claims.
      * Ensures user exists and is linked to the OAuth account.
      */
-    async provisionOrUpdateOAuthUser({ sub, email, provider, username, name, given_name, family_name, emailVerified }: {
+    async provisionOrUpdateOAuthUser({ 
+      sub,
+      email,
+      roles, 
+      plan,
+      created_at,
+      emailVerified,
+      provider, 
+      username, 
+      name, 
+      given_name, 
+      family_name,
+      nickname,
+      picture }: {
       sub: string;
       email: string;
+      roles?: string[];
+      plan?: string;
+      created_at?: Date;
+      emailVerified?: boolean;
       provider: string;
       username?: string;
       name?: string;
       given_name?: string;
       family_name?: string;
-      emailVerified?: boolean;
+      nickname?: string;
+      picture?: string;
     }): Promise<User> {
-      console.log('[UserService] Provisioning user:', { sub, email, provider, username, name, given_name, family_name, emailVerified });
+      console.log('[UserService] Provisioning user:', { sub, email, provider });
       if (!sub || !email || !provider) {
         console.error('[UserService] Missing required fields:', { sub, email, provider });
         throw new Error('sub, email, and provider are required');
       }
       try {
-        // 1. Try to find user by OAuth account (provider + sub)
-        let user = await this.getUserByOAuthAccount(provider, sub);
-        if (user) {
-          console.log('[UserService] Found user by OAuth account:', user.id);
-          // Optionally update user info if changed
-          if (email && user.email !== email) {
-            user = await this.updateUser({ id: user.id, email });
-            console.log('[UserService] Updated user email:', user.id);
-          }
-          // Update last login
-          user = await this.updateUser({ id: user.id, lastLoginAt: new Date() });
-          console.log('[UserService] Updated last login:', user.id);
-          return user;
-        }
-
-        // 2. Try to find user by email
-        user = await this.getUserByEmail(email);
+        // 1. Check for user by email
+        let user = await this.getUserByEmail(email);
         if (user) {
           console.log('[UserService] Found user by email:', user.id);
-          // Link OAuth account if not already linked
-          const existingOAuth = await this.getUserByOAuthAccount(provider, sub);
-          if (!existingOAuth) {
-            await this.createOAuthAccount({
-              userId: user.id,
-              provider,
-              providerAccountId: sub,
-            });
-            console.log('[UserService] Linked OAuth account:', { userId: user.id, provider, sub });
-          }
-          // Update last login
-          user = await this.updateUser({ id: user.id, lastLoginAt: new Date() });
-          console.log('[UserService] Updated last login:', user.id);
-          return user;
+          // Update last login and emailVerified
+          user = await this.updateUser({ id: user.id, lastLoginAt: new Date(), emailVerified });
+        } else {
+          // Create user
+          const finalUsername = username || email.split('@')[0];
+          const usernameToUse = nickname || finalUsername;
+          user = await this.createUser({
+            email,
+            username: usernameToUse,
+            emailVerified: emailVerified || false,
+            password: null,
+            lastLoginAt: new Date(),
+          });
+          console.log('[UserService] Created new user:', user.id);
         }
 
-        // 3. Create new user and link OAuth account
-        const finalUsername = username || email.split('@')[0];
-        user = await this.createUser({
-          email,
-          username: finalUsername,
-          emailVerified: emailVerified || false,
-          password: null,
-          lastLoginAt: new Date(),
-        });
-        console.log('[UserService] Created new user:', user.id);
-        await this.createOAuthAccount({
-          userId: user.id,
-          provider,
-          providerAccountId: sub,
-        });
-        console.log('[UserService] Linked OAuth account to new user:', { userId: user.id, provider, sub });
-        if (name || given_name || family_name) {
+        // 2. Check for OAuthAccount by provider + sub
+        const oauthAccount = await this.getUserByOAuthAccount(provider, sub);
+        if (oauthAccount) {
+          if (oauthAccount.id !== user.id) {
+            console.warn('[UserService] OAuthAccount userId mismatch:', { oauthAccountUserId: oauthAccount.id, userId: user.id });
+            // Optionally handle mismatch (e.g., update, error, etc.)
+          } else {
+            console.log('[UserService] OAuthAccount already linked:', oauthAccount.id);
+          }
+        } else {
+          await this.createOAuthAccount({
+            userId: user.id,
+            provider,
+            providerAccountId: sub,
+          });
+          console.log('[UserService] Linked OAuth account:', { userId: user.id, provider, sub });
+        }
+
+        // 3. Check for UserProfile by userId
+        let profile = await this.repo.findUserProfileByUserId(user.id);
+        if (profile) {
+          await this.repo.updateUserProfile({
+            userId: user.id,
+            displayName: name,
+            firstName: given_name,
+            lastName: family_name,
+            avatarUrl: picture,
+          });
+          console.log('[UserService] Updated user profile:', user.id);
+        } else {
           await this.createUserProfile({
             userId: user.id,
             displayName: name,
             firstName: given_name,
             lastName: family_name,
+            avatarUrl: picture,
           });
           console.log('[UserService] Created user profile:', user.id);
         }
+        // Track duplicate provisioning calls
+        if ((global as any).__provisioningCallCount === undefined) {
+          (global as any).__provisioningCallCount = 0;
+        }
+        (global as any).__provisioningCallCount++;
+        console.log(`[UserService] Provisioning call count (per process): ${(global as any).__provisioningCallCount}`);
         return user;
       } catch (err) {
         console.error('[UserService] Error during provisioning:', err);
         throw err;
       }
     }
-  constructor(
-    @inject('IUserRepository') private repo: IUserRepository
-  ) {}
+
 
   async createUser(user: Partial<User> & { email: string; username: string }): Promise<User> {
     if (!user.email || !user.username) {
