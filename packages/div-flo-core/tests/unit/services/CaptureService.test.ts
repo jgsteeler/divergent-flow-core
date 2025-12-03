@@ -54,6 +54,7 @@ describe('CaptureService', () => {
 
   it('calls repo.update with valid data', async () => {
     const data = { id: 'c1', userId: 'u1', rawText: 'foo', createdAt: new Date(), updatedAt: new Date() } as Capture;
+    userService.getInternalUserId.mockResolvedValue('u1');
     repo.update.mockResolvedValue(data);
     const result = await service.updateCapture(data);
     expect(repo.update).toHaveBeenCalledWith(data);
@@ -75,6 +76,7 @@ describe('CaptureService', () => {
         { id: 'c1', userId: 'u1', rawText: 'foo', createdAt: new Date(), updatedAt: new Date(), migratedDate: null },
         { id: 'c2', userId: 'u1', rawText: 'bar', createdAt: new Date(), updatedAt: new Date(), migratedDate: null },
       ];
+      userService.getInternalUserId.mockResolvedValue('u1');
       repo.listByUser.mockResolvedValue(captures);
       const result = await service.listCapturesByUser('u1');
       expect(repo.listByUser).toHaveBeenCalledWith('u1', undefined);
@@ -84,6 +86,7 @@ describe('CaptureService', () => {
       const captures: Capture[] = [
         { id: 'c1', userId: 'u1', rawText: 'foo', createdAt: new Date(), updatedAt: new Date(), migratedDate: null },
       ];
+      userService.getInternalUserId.mockResolvedValue('u1');
       repo.listByUser.mockResolvedValue(captures);
       const result = await service.listCapturesByUser('u1', true);
       expect(repo.listByUser).toHaveBeenCalledWith('u1', true);
