@@ -1,82 +1,62 @@
 import 'reflect-metadata';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { KeycloakAuthProvider } from '../../../src/auth/KeycloakAuthProvider';
+import { Auth0AuthProvider } from '../../../src/auth/Auth0AuthProvider';
 import { AuthProvider } from '../../../src/auth/AuthProvider';
 
-// Mock jose library
+// Mock jose and fetch
 vi.mock('jose', () => ({
   jwtVerify: vi.fn(),
   createRemoteJWKSet: vi.fn(() => 'mock-jwks'),
 }));
+global.fetch = vi.fn();
 
-describe('KeycloakAuthProvider', () => {
-  let authProvider: KeycloakAuthProvider;
-  const mockIssuer = 'https://keycloak.example.com/realms/test';
+describe('Auth0AuthProvider', () => {
+  let authProvider: Auth0AuthProvider;
+  const mockIssuer = 'https://auth0.example.com/';
   const mockAudience = 'test-client';
-  const mockJwksUrl = 'https://keycloak.example.com/realms/test/protocol/openid-connect/certs';
+  const mockJwksUrl = 'https://auth0.example.com/.well-known/jwks.json';
 
   beforeEach(() => {
     vi.clearAllMocks();
+    process.env.AUTH0_ISSUER = mockIssuer;
+    process.env.AUTH0_AUDIENCE = mockAudience;
+    process.env.AUTH0_JWKS_URL = mockJwksUrl;
+    process.env.AUTH0_ROLES_CLAIM = 'roles';
+    authProvider = new Auth0AuthProvider();
   });
 
   describe('constructor', () => {
     it('should initialize with provided JWKS URL', () => {
-      // Act
-      authProvider = new KeycloakAuthProvider(mockIssuer, mockAudience, mockJwksUrl);
-
       // Assert
       expect((authProvider as any).issuer).toBe(mockIssuer);
-      expect((authProvider as any).audiences).toEqual([mockAudience]);
+      expect((authProvider as any).audience).toBe(mockAudience);
       expect((authProvider as any).jwksUrl).toBe(mockJwksUrl);
-    });
-
-    it('should derive JWKS URL from issuer when not provided', () => {
-      // Act
-      authProvider = new KeycloakAuthProvider(mockIssuer, mockAudience);
-
-      // Assert
-      expect((authProvider as any).jwksUrl).toBe(`${mockIssuer}/protocol/openid-connect/certs`);
-    });
-
-    it('should handle multiple audiences', () => {
-      // Arrange
-      const multipleAudiences = 'client1, client2 , client3';
-
-      // Act
-      authProvider = new KeycloakAuthProvider(mockIssuer, multipleAudiences);
-
-      // Assert
-      expect((authProvider as any).audiences).toEqual(['client1', 'client2', 'client3']);
-    });
-
-    it('should handle empty audience', () => {
-      // Act
-      authProvider = new KeycloakAuthProvider(mockIssuer, '');
-
-      // Assert
-      expect((authProvider as any).audiences).toEqual([]);
+      expect((authProvider as any).rolesClaim).toBe('roles');
     });
   });
 
   describe('validateAccessToken', () => {
-    beforeEach(() => {
-      authProvider = new KeycloakAuthProvider(mockIssuer, mockAudience);
-    });
-
-    it('should validate token successfully and return user info', async () => {
+    it('should validate token and return user info', async () => {
       // Arrange
       const mockToken = 'valid.jwt.token';
       const mockPayload = {
         sub: 'user-123',
-        email: 'user@example.com',
-        realm_access: { roles: ['user', 'admin'] },
         plan: 'premium',
+        roles: ['user', 'admin'],
       };
-
+      const mockProfile = {
+        email: 'user@example.com',
+        created_at: '2025-12-01T00:00:00.000Z',
+        email_verified: true,
+        family_name: 'Doe',
+        given_name: 'John',
+        name: 'John Doe',
+        nickname: 'johnny',
+        picture: 'http://example.com/pic.jpg',
+      };
       const { jwtVerify } = await import('jose');
-      (jwtVerify as any).mockResolvedValue({
-        payload: mockPayload,
-      });
+      (jwtVerify as any).mockResolvedValue({ payload: mockPayload });
+      (global.fetch as any).mockResolvedValue({ ok: true, json: async () => mockProfile });
 
       // Act
       const result = await authProvider.validateAccessToken(mockToken);
@@ -84,178 +64,92 @@ describe('KeycloakAuthProvider', () => {
       // Assert
       expect(jwtVerify).toHaveBeenCalledWith(mockToken, 'mock-jwks', {
         issuer: mockIssuer,
-        audience: [mockAudience],
+        audience: mockAudience,
       });
       expect(result).toEqual({
         sub: 'user-123',
         email: 'user@example.com',
         roles: ['user', 'admin'],
         plan: 'premium',
+        created_at: new Date('2025-12-01T00:00:00.000Z'),
+        email_verified: true,
+        family_name: 'Doe',
+        given_name: 'John',
+        name: 'John Doe',
+        nickname: 'johnny',
+        picture: 'http://example.com/pic.jpg',
       });
     });
 
-    it('should handle token without realm_access', async () => {
+    it('should handle token with no roles', async () => {
       // Arrange
       const mockToken = 'valid.jwt.token';
-      const mockPayload = {
-        sub: 'user-123',
-        email: 'user@example.com',
-        plan: 'free',
-      };
-
+      const mockPayload = { sub: 'user-123', plan: 'free' };
+      const mockProfile = { email: 'user@example.com' };
       const { jwtVerify } = await import('jose');
-      (jwtVerify as any).mockResolvedValue({
-        payload: mockPayload,
-      });
+      (jwtVerify as any).mockResolvedValue({ payload: mockPayload });
+      (global.fetch as any).mockResolvedValue({ ok: true, json: async () => mockProfile });
 
       // Act
       const result = await authProvider.validateAccessToken(mockToken);
 
       // Assert
-      expect(result).toEqual({
-        sub: 'user-123',
-        email: 'user@example.com',
-        roles: [],
-        plan: 'free',
-      });
+      expect(result.roles).toEqual([]);
     });
 
-    it('should handle token without plan', async () => {
+    it('should handle failed /userinfo fetch', async () => {
       // Arrange
       const mockToken = 'valid.jwt.token';
-      const mockPayload = {
-        sub: 'user-123',
-        email: 'user@example.com',
-        realm_access: { roles: ['user'] },
-      };
-
+      const mockPayload = { sub: 'user-123', plan: 'free', roles: [] };
       const { jwtVerify } = await import('jose');
-      (jwtVerify as any).mockResolvedValue({
-        payload: mockPayload,
-      });
+      (jwtVerify as any).mockResolvedValue({ payload: mockPayload });
+      (global.fetch as any).mockResolvedValue({ ok: false, text: async () => 'error' });
 
       // Act
       const result = await authProvider.validateAccessToken(mockToken);
 
       // Assert
-      expect(result).toEqual({
-        sub: 'user-123',
-        email: 'user@example.com',
-        roles: ['user'],
-        plan: 'free',
-      });
+      expect(result.email).toBeUndefined();
     });
 
     it('should throw error for invalid token', async () => {
       // Arrange
       const mockToken = 'invalid.jwt.token';
       const mockError = new Error('Invalid signature');
-
       const { jwtVerify } = await import('jose');
       (jwtVerify as any).mockRejectedValue(mockError);
 
       // Act & Assert
-      await expect(authProvider.validateAccessToken(mockToken))
-        .rejects
-        .toThrow('Token validation failed: Invalid signature');
-    });
-
-    it('should validate token without audience when none specified', async () => {
-      // Arrange
-      authProvider = new KeycloakAuthProvider(mockIssuer, '');
-      const mockToken = 'valid.jwt.token';
-      const mockPayload = {
-        sub: 'user-123',
-        email: 'user@example.com',
-      };
-
-      const { jwtVerify } = await import('jose');
-      (jwtVerify as any).mockResolvedValue({
-        payload: mockPayload,
-      });
-
-      // Act
-      const result = await authProvider.validateAccessToken(mockToken);
-
-      // Assert
-      expect(jwtVerify).toHaveBeenCalledWith(mockToken, 'mock-jwks', {
-        issuer: mockIssuer,
-        audience: undefined,
-      });
+      await expect(authProvider.validateAccessToken(mockToken)).rejects.toThrow('Token validation failed: Invalid signature');
     });
   });
 
   describe('getUserInfo', () => {
-    beforeEach(() => {
-      authProvider = new KeycloakAuthProvider(mockIssuer, mockAudience);
-    });
-
-    it('should return same info as validateAccessToken', async () => {
+    it('should call validateAccessToken', async () => {
       // Arrange
       const mockToken = 'valid.jwt.token';
-      const mockPayload = {
-        sub: 'user-123',
-        email: 'user@example.com',
-        realm_access: { roles: ['user'] },
-        plan: 'premium',
-      };
-
-      const { jwtVerify } = await import('jose');
-      (jwtVerify as any).mockResolvedValue({
-        payload: mockPayload,
-      });
+      const spy = vi.spyOn(authProvider, 'validateAccessToken').mockResolvedValue({ sub: 'user-123', email: 'user@example.com', roles: [], plan: 'free' });
 
       // Act
       const result = await authProvider.getUserInfo(mockToken);
 
       // Assert
-      expect(result).toEqual({
-        sub: 'user-123',
-        email: 'user@example.com',
-        roles: ['user'],
-        plan: 'premium',
-      });
+      expect(spy).toHaveBeenCalledWith(mockToken);
+      expect(result).toEqual({ sub: 'user-123', email: 'user@example.com', roles: [], plan: 'free' });
     });
   });
 
   describe('getJWKS', () => {
-    beforeEach(() => {
-      authProvider = new KeycloakAuthProvider(mockIssuer, mockAudience);
-    });
-
     it('should throw not implemented error', async () => {
       // Act & Assert
-      await expect(authProvider.getJWKS())
-        .rejects
-        .toThrow('Not implemented');
+      await expect(authProvider.getJWKS()).rejects.toThrow('Not implemented');
     });
   });
 
   describe('createDeviceCode', () => {
-    beforeEach(() => {
-      authProvider = new KeycloakAuthProvider(mockIssuer, mockAudience);
-    });
-
     it('should throw not implemented error', async () => {
       // Act & Assert
-      await expect(authProvider.createDeviceCode('client-id'))
-        .rejects
-        .toThrow('Device code flow not implemented yet');
-    });
-  });
-
-  describe('getJWKSet caching', () => {
-    it('should cache JWKS instance', () => {
-      // Arrange
-      authProvider = new KeycloakAuthProvider(mockIssuer, mockAudience);
-
-      // Act
-      const jwks1 = (authProvider as any).getJWKSet();
-      const jwks2 = (authProvider as any).getJWKSet();
-
-      // Assert
-      expect(jwks1).toBe(jwks2);
-      expect(jwks1).toBe('mock-jwks');
+      await expect(authProvider.createDeviceCode('client-id')).rejects.toThrow('Device code flow not implemented yet');
     });
   });
 });
