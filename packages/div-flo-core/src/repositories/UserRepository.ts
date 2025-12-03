@@ -4,6 +4,25 @@ import { User, OAuthAccount, UserProfile, PrismaClient, Prisma } from "@prisma/c
 
 @injectable()
 export class UserRepository implements IUserRepository {
+      async updateUserProfile(profile: Partial<UserProfile> & { userId: string }): Promise<UserProfile> {
+        // Only update allowed fields
+        const data: Prisma.UserProfileUpdateInput = {
+          displayName: profile.displayName ?? undefined,
+          firstName: profile.firstName ?? undefined,
+          lastName: profile.lastName ?? undefined,
+          bio: profile.bio ?? undefined,
+          avatarUrl: profile.avatarUrl ?? undefined,
+        };
+        return this.prisma.userProfile.update({
+          where: { userId: profile.userId },
+          data,
+        });
+      }
+    async findUserProfileByUserId(userId: string): Promise<UserProfile | null> {
+      return this.prisma.userProfile.findUnique({
+        where: { userId },
+      });
+    }
   private prisma: PrismaClient;
 
   constructor(@inject('PrismaClient') prismaClient: PrismaClient) {

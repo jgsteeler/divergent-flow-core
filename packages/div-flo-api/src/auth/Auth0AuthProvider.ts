@@ -35,11 +35,41 @@ export class Auth0AuthProvider implements AuthProvider {
         roles = Array.isArray(payload[this.rolesClaim]) ? payload[this.rolesClaim] as string[] : [];
       }
 
+
+      // Get UserProfile from the userInfo route on auth0
+      let profile: Record<string, any> = {};
+      try {
+        
+        const userinfoUrl = `${this.issuer.replace(/\/$/, '')}/userinfo`;
+        const resp = await fetch(userinfoUrl, {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        });
+        if (resp.ok) {
+          profile = await resp.json() as Record<string, any>;
+          console.log('[validateAccessToken] Fetched profile from /userinfo:', profile);
+        } else {
+          console.warn('[validateAccessToken] Failed to fetch /userinfo:', await resp.text());
+        }
+      } catch (err) {
+        console.error('[validateAccessToken] Error fetching /userinfo:', err);
+      }
+
       return {
         sub: payload.sub as string,
-        email: payload.email as string,
+        email: profile.email as string,
         roles,
         plan: payload.plan as string || 'free',
+        created_at: profile.created_at ? new Date(profile.created_at) : undefined,
+        email_verified: profile.email_verified as boolean,
+        family_name: profile.family_name as string,
+        given_name: profile.given_name as string,
+        name: profile.name as string,
+        nickname: profile.nickname as string,
+        picture: profile.picture as string,
       };
     } catch (error) {
       throw new Error(`Token validation failed: ${(error as Error).message}`);
