@@ -4,7 +4,7 @@ import { User, OAuthAccount, UserProfile} from '@prisma/client';
 
 @injectable()
 export class UserService implements IUserService {
-      constructor(
+  constructor(
     @inject('IUserRepository') private repo: IUserRepository
   ) {} 
   
