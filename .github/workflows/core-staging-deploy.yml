@@ -21,8 +21,9 @@ jobs:
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_STAGING_TOKEN }}
         run: |
-          # Set database secret before deployment
+          # Set database and redis secrets before deployment
           flyctl secrets set DATABASE_URL="${{ secrets.STAGING_DATABASE_URL }}" -a divergent-flow-core-staging || true
+          flyctl secrets set REDIS_URL="${{ secrets.STAGING_REDIS_URL }}" -a divergent-flow-core-staging || true
           
           flyctl deploy -c fly-staging.toml --remote-only --verbose
           flyctl status -a divergent-flow-core-staging || true

@@ -8,11 +8,13 @@ Core business logic and API services for Divergent Flow — ADHD-optimized produ
 
 This project is optimized for running locally without Docker during development. The Dockerfile is kept for CI/CD image builds and deployments; docker-compose files are intentionally ignored.
 
+
 ### Prerequisites
 
 - Node.js 20.x (same as CI)
 - npm 10+ (comes with Node 20)
 - PostgreSQL 15 running locally (Homebrew or your preferred install)
+- Redis (local for dev, Fly.io for staging/prod)
 - macOS/zsh examples below
 
 Optional: Docker Desktop if you personally run containers locally. Any docker-compose files you create will be ignored by git.
@@ -23,10 +25,12 @@ Optional: Docker Desktop if you personally run containers locally. Any docker-co
 cp .env.example .env.local
 ```
 
+
 Edit `.env.local` at the monorepo root and set at minimum:
 
 ```dotenv
 DATABASE_URL=postgresql://divergent:divergentpw@localhost:5432/div-flo-data-dev
+REDIS_URL=redis://localhost:6379
 PORT=3001
 NODE_ENV=development
 ```
@@ -34,7 +38,36 @@ NODE_ENV=development
 Notes:
 
 - `DATABASE_URL` should point to your local Postgres instance/db.
+- `REDIS_URL` should point to your local Redis instance for dev, or Fly.io/Upstash for staging/prod.
 - If you use a different user/db, update the URL accordingly.
+## Environment Variables & Secrets
+
+The following environment variables and secrets are required for different environments:
+
+| Name         | Description                                 | Local Example / Source                |
+|--------------|---------------------------------------------|---------------------------------------|
+| DATABASE_URL | PostgreSQL connection string                 | `postgresql://...`                    |
+| REDIS_URL    | Redis connection string                      | `redis://localhost:6379`              |
+| OIDC_ISSUER_URL | OIDC/Auth0 issuer URL                     | `https://dev-...us.auth0.com/`        |
+| OIDC_AUDIENCE   | OIDC client audience                      | `web-app`                             |
+| CORS_ORIGINS | Allowed CORS origins (comma-separated)       | `http://localhost:5173,...`           |
+| APP_BASE_URL | Base URL of the app                          | `http://localhost:3001`               |
+| ENABLE_SWAGGER | Enable Swagger UI (true/false)             | `true`                                |
+
+Secrets for staging/prod are managed via GitHub Actions and Fly.io. See [SECRETS.md](SECRETS.md) for details.
+## Redis Cache Integration
+
+The core API now uses Redis for caching user provisioning and other operations. You must have Redis running locally for development, and configure the correct `REDIS_URL` for staging and production (see above).
+
+- For local dev: install Redis via Homebrew (`brew install redis`) and start with `brew services start redis`.
+- For staging/prod: use Fly.io Redis add-on and set the `REDIS_URL` secret.
+
+See [SECRETS.md](SECRETS.md) for more info.
+## Auth0/OIDC Migration
+
+The project has migrated to Auth0/OIDC for authentication and user provisioning. Ensure your environment variables and secrets reflect the new OIDC settings. See [SECRETS.md](SECRETS.md) for required values.
+
+**Breaking change:** User IDs are now mapped via OIDC provider IDs; ensure all integrations use the correct mapping logic.
 
 ### 2) Install dependencies
 
