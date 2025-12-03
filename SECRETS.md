@@ -9,6 +9,7 @@ The application uses a hybrid approach for configuration:
 **Secrets (Fly.io secrets - sensitive):**
 
 - `DATABASE_URL` - PostgreSQL database connection string
+- `REDIS_URL` - Redis cache connection string
 
 **Environment Variables (fly.toml - non-sensitive):**
 
@@ -29,6 +30,7 @@ Secrets are automatically managed through GitHub Actions workflows:
 
 The workflows read secrets from GitHub repository secrets and set them on Fly.io before deployment.
 
+
 ### Required GitHub Secrets
 
 Set these in your GitHub repository settings under "Secrets and variables" > "Actions":
@@ -36,11 +38,13 @@ Set these in your GitHub repository settings under "Secrets and variables" > "Ac
 #### Staging Secrets
 
 - `STAGING_DATABASE_URL`
+- `STAGING_REDIS_URL`
 - `FLY_STAGING_TOKEN` (Fly.io API token for staging)
 
 #### Production Secrets
 
 - `PROD_DATABASE_URL`
+- `PROD_REDIS_URL`
 - `FLY_API_TOKEN` (Fly.io API token for production)
 
 **Note:** Other configuration values (OIDC, CORS, etc.) are set as environment variables in the `fly.toml` files and don't need to be secrets.
@@ -72,31 +76,38 @@ export STAGING_OIDC_ISSUER_URL="https://..."
 
 ### Direct Fly.io Commands
 
+
 You can also manage secrets directly using flyctl:
 
 ```bash
 # Set a secret for staging
 flyctl secrets set DATABASE_URL="your-database-url" -a divergent-flow-core-staging
+flyctl secrets set REDIS_URL="your-redis-url" -a divergent-flow-core-staging
 
 # List secrets
 flyctl secrets list -a divergent-flow-core-staging
 
 # Unset a secret
 flyctl secrets unset DATABASE_URL -a divergent-flow-core-staging
+flyctl secrets unset REDIS_URL -a divergent-flow-core-staging
 ```
 
 ## Environment-Specific Values
 
+
 ### Staging
 
 - **Database**: Neon staging database
+- **Redis**: Fly.io Redis add-on (see `REDIS_URL`)
 - **OIDC**: Keycloak staging realm
 - **CORS**: `https://divflow-staging.netlify.app,*.netlify.app,http://localhost:5173`
 - **Base URL**: `https://divergent-flow-core-staging.fly.dev`
 
+
 ### Production
 
 - **Database**: Neon production database
+- **Redis**: Fly.io Redis add-on (see `REDIS_URL`)
 - **OIDC**: Keycloak production realm
 - **CORS**: Production frontend URLs
 - **Base URL**: `https://divergent-flow-core.fly.dev`
