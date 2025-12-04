@@ -4,7 +4,7 @@
 
 Core business logic and API services for Divergent Flow — ADHD-optimized productivity system.
 
-## Local Development (no Docker)
+## Local Development (without Docker)
 
 This project is optimized for running locally without Docker during development. The Dockerfile is kept for CI/CD image builds and deployments; docker-compose files are intentionally ignored.
 
