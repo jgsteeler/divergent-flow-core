@@ -9,7 +9,7 @@ import swaggerUi from 'swagger-ui-express';
 // Internal modules
 import { configureDI, container } from './container';
 import { swaggerSpec } from './swagger';
-import { requestLogger, responseLogger, errorLogger, logger } from './middleware/logger';
+import { requestLogger, responseLogger, errorLogger, setInjectedLogger, getInjectedLogger } from './middleware/logger';
 
 // Controllers
 import type { VersionController as VCType } from './controllers/VersionController';
@@ -37,6 +37,11 @@ if (process.env.NODE_ENV === 'production' || process.env.RUN_FROM_DIST === 'true
 // Configure dependency injection
 configureDI();
 
+// Inject logger from DI
+import { LogProvider } from '@div-flo/core/logging/LogProvider';
+const injectedLogger = container.resolve('ILoggingProvider') as LogProvider;
+setInjectedLogger(injectedLogger);
+
 // DI-resolved controller instances
 const versionController = container.resolve(VersionController);
 const captureController = container.resolve(CaptureController);
@@ -51,17 +56,17 @@ const app = express();
 const port = process.env.PORT || 3001;
 
 // Debug: log the CORS_ORIGINS env var at startup
-logger.info('[CORS] process.env.CORS_ORIGINS', { origins: process.env.CORS_ORIGINS });
+getInjectedLogger().info('[CORS] process.env.CORS_ORIGINS', { origins: process.env.CORS_ORIGINS });
 
 // Enable CORS for local dev, UI, and Docker
 const allowedOrigins = (process.env.CORS_ORIGINS || 'http://localhost:5173').split(',').map(o => o.trim());
-logger.info('[CORS] Raw CORS_ORIGINS', { raw: process.env.CORS_ORIGINS });
-logger.info('[CORS] Parsed allowedOrigins', { allowedOrigins });
+getInjectedLogger().info('[CORS] Raw CORS_ORIGINS', { raw: process.env.CORS_ORIGINS });
+getInjectedLogger().info('[CORS] Parsed allowedOrigins', { allowedOrigins });
 app.use(cors({
   origin: function (origin, callback) {
     // Log the incoming origin and allowed origins for debugging
-    logger.info('[CORS] Incoming Origin', { origin });
-    logger.info('[CORS] Allowed Origins', { allowedOrigins });
+    getInjectedLogger().info('[CORS] Incoming Origin', { origin });
+    getInjectedLogger().info('[CORS] Allowed Origins', { allowedOrigins });
     // allow requests with no origin (like mobile apps, curl, etc.)
     if (!origin) return callback(null, true);
     
@@ -69,33 +74,33 @@ app.use(cors({
     let allow = false;
     if (allowedOrigins.includes(origin)) {
       allow = true;
-      logger.info('[CORS] Exact match allowed', { origin });
+      getInjectedLogger().info('[CORS] Exact match allowed', { origin });
     } else {
       try {
         const originUrl = new URL(origin);
         const host = originUrl.hostname;
-        logger.info('[CORS] Checking wildcard for host', { host });
+        getInjectedLogger().info('[CORS] Checking wildcard for host', { host });
         for (const item of allowedOrigins) {
-          logger.info('[CORS] Checking item', { item });
+          getInjectedLogger().info('[CORS] Checking item', { item });
           if (item.startsWith('*.')) {
             const suffix = item.slice(2);
-            logger.info('[CORS] Wildcard check', { suffix, host, endsWith: host.endsWith('.' + suffix) });
+            getInjectedLogger().info('[CORS] Wildcard check', { suffix, host, endsWith: host.endsWith('.' + suffix) });
             if (host === suffix || host.endsWith('.' + suffix)) {
               allow = true;
-              logger.info('[CORS] Wildcard match allowed', { origin, item });
+              getInjectedLogger().info('[CORS] Wildcard match allowed', { origin, item });
               break;
             }
           }
         }
       } catch (err) {
-        logger.debug('[CORS] Error parsing origin', { origin, error: err });
+        getInjectedLogger().debug('[CORS] Error parsing origin', { origin, error: err });
       }
     }
     
     if (allow) {
       return callback(null, true);
     } else {
-      logger.warn('[CORS] Blocked Origin', { origin });
+      getInjectedLogger().warn('[CORS] Blocked Origin', { origin });
       return callback(new Error('Not allowed by CORS'), false);
     }
   },
@@ -204,5 +209,5 @@ app.listen(port, () => {
     console.log(`   API documentation: http://localhost:${port}/api-docs`);
   }
 
-  logger.info('Server startup complete - Ready to handle requests');
+  getInjectedLogger().info('Server startup complete - Ready to handle requests');
 });

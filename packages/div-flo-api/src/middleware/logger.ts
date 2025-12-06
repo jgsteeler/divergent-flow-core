@@ -1,8 +1,8 @@
-import winston from 'winston';
 import fs from 'fs';
 import path from 'path';
 import morgan from 'morgan';
 import { Request, Response, NextFunction } from 'express';
+import { LogProvider } from '@div-flo/core/logging/LogProvider';
 
 // Extend Request interface to include startTime
 declare module 'express-serve-static-core' {
@@ -75,51 +75,24 @@ const logDirectory = resolvedLogDirectory;
 // Log initialization info to console (before Winston is configured)
 console.log(`📝 Logging configured - Directory: ${logDirectory}`);
 
-// Create Winston logger instance
-export const logger = winston.createLogger({
-  level: process.env.LOG_LEVEL || 'info',
-  format: winston.format.combine(
-    winston.format.timestamp(),
-    winston.format.errors({ stack: true }),
-    winston.format.json()
-  ),
-  transports: [
-    // File transport with rotation
-    new winston.transports.File({
-      filename: `${logDirectory}/error.log`,
-      level: 'error',
-      maxsize: 5242880, // 5MB
-      maxFiles: 5,
-      format: winston.format.combine(
-        winston.format.timestamp(),
-        winston.format.json()
-      )
-    }),
-    new winston.transports.File({
-      filename: `${logDirectory}/combined.log`,
-      maxsize: 5242880, // 5MB
-      maxFiles: 5,
-      format: winston.format.combine(
-        winston.format.timestamp(),
-        winston.format.json()
-      )
-    })
-  ]
-});
+// Determine environment
+const isProd = process.env.NODE_ENV === 'production' || process.env.STAGE === 'prod' || process.env.STAGE === 'production';
+const isStaging = process.env.STAGE === 'staging';
+const isLocal = !isProd && !isStaging;
 
-// Always add a Winston console transport (sanitized), even in Docker/production
-logger.add(new winston.transports.Console({
-  format: winston.format.combine(
-    winston.format.colorize(),
-    winston.format.timestamp({ format: 'HH:mm:ss' }),
-    winston.format.printf(({ timestamp, level, message, ...meta }) => {
-      const sanitizedMeta = sanitizeObject(meta);
-      return `${timestamp} [${level}]: ${message} ${
-        Object.keys(sanitizedMeta).length ? JSON.stringify(sanitizedMeta, null, 2) : ''
-      }`;
-    })
-  )
-}));
+// Set log level
+const logLevel = isLocal ? 'debug' : 'info';
+
+
+// Logger injection pattern
+let injectedLogger: LogProvider | undefined;
+export function setInjectedLogger(logger: LogProvider) {
+  injectedLogger = logger;
+}
+export function getInjectedLogger(): LogProvider {
+  if (!injectedLogger) throw new Error('ILoggingProvider not injected!');
+  return injectedLogger;
+}
 
 // Sanitization function to remove sensitive data
 function sanitizeObject(obj: any): any {
@@ -162,7 +135,7 @@ const morganFormat = ':remote-addr - :remote-user [:date[clf]] ":method :url HTT
 export const requestLogger = morgan(morganFormat, {
   stream: {
     write: (message: string) => {
-      logger.info(message.trim(), { type: 'http-request' });
+      getInjectedLogger().info(message.trim(), { type: 'http-request' });
     }
   },
   skip: (req: Request) => {
@@ -210,11 +183,11 @@ export const responseLogger = (req: Request, res: Response, next: NextFunction) 
     
     // Log based on status code
     if (res.statusCode >= 500) {
-      logger.error('HTTP Response Error', logData);
+      getInjectedLogger().error('HTTP Response Error', logData);
     } else if (res.statusCode >= 400) {
-      logger.warn('HTTP Response Warning', logData);
+      getInjectedLogger().warn('HTTP Response Warning', logData);
     } else {
-      logger.info('HTTP Response', logData);
+      getInjectedLogger().info('HTTP Response', logData);
     }
     
     return originalSend.call(this, body);
@@ -225,7 +198,7 @@ export const responseLogger = (req: Request, res: Response, next: NextFunction) 
 
 // Error logging middleware
 export const errorLogger = (err: Error, req: Request, res: Response, next: any) => {
-  logger.error('Request failed', {
+  getInjectedLogger().error('Request failed', {
     type: 'http-error',
     error: {
       message: err.message,
@@ -244,5 +217,3 @@ export const errorLogger = (err: Error, req: Request, res: Response, next: any) 
   
   next(err);
 };
-
-export default logger;

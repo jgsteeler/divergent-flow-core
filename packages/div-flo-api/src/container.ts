@@ -35,8 +35,16 @@ import { UserController } from "./controllers/UserController";
 import { AuthProvider } from "./auth/AuthProvider";
 import { Auth0AuthProvider } from "./auth/Auth0AuthProvider";
 
+// Logging
+import { LogProvider } from "@div-flo/core/logging/LogProvider";
+import { createLogger } from "@div-flo/core/logging/loggerFactory";
+
 // Configure DI container
 export function configureDI(): void {
+    // --- Logging provider registration ---
+    container.register<LogProvider>("ILoggingProvider", {
+      useFactory: () => createLogger(),
+    });
   // --- Repository registrations ---
   // Register PrismaClient as singleton
   container.registerInstance<PrismaClient>('PrismaClient', new PrismaClient());

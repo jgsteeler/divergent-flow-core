@@ -9,7 +9,7 @@
     },
     "composite": true
   },
-    "include": ["src/**/*", "tests/**/*"],
+    "include": ["src/**/*", "tests/**/*", "../../../src/logging/**/*"],
   "exclude": ["dist", "node_modules"],
   "references": [
     { "path": "../div-flo-models" }

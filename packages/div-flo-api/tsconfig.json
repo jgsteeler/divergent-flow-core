@@ -6,7 +6,8 @@
     "baseUrl": ".",
     "paths": {
       "@div-flo/models": ["../../packages/div-flo-models/src"],
-      "@div-flo/core": ["../../packages/div-flo-core/src"]
+      "@div-flo/core": ["../../packages/div-flo-core/src"],
+      "@div-flo/core/logging/*": ["../../packages/div-flo-core/src/logging/*"]
     },
     "composite": true
   },
@@ -14,7 +15,8 @@
       "src/**/*.ts",
       "src/**/*.js",
       "tests/**/*.ts",
-      "tests/**/*.js"
+      "tests/**/*.js",
+      "../div-flo-core/src/logging/**/*.ts"
     ],
   "exclude": ["node_modules", "dist"],
   "references": [
