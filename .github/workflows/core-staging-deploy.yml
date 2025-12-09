@@ -1,14 +1,15 @@
 name: Core Staging Deploy
 
 on:
-  push:
-    branches: [develop]
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches: [main]
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     concurrency:
-      group: core-staging-deploy
+      group: core-staging-deploy-${{ github.event.pull_request.number }}
       cancel-in-progress: true
     steps:
       - name: Checkout
@@ -24,7 +25,7 @@ jobs:
           # Set database and redis secrets before deployment
           flyctl secrets set DATABASE_URL="${{ secrets.STAGING_DATABASE_URL }}" -a divergent-flow-core-staging || true
           flyctl secrets set REDIS_URL="${{ secrets.STAGING_REDIS_URL }}" -a divergent-flow-core-staging || true
-          
+
           flyctl deploy -c fly-staging.toml --remote-only --verbose
           flyctl status -a divergent-flow-core-staging || true
 
