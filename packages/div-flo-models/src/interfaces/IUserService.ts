@@ -11,4 +11,5 @@ export interface IUserService {
   listUsers(): Promise<User[]>;
   createOAuthAccount(account: Partial<OAuthAccount> & { userId: string; provider: string; providerAccountId: string }): Promise<OAuthAccount>;
   createUserProfile(profile: Partial<UserProfile> & { userId: string }): Promise<UserProfile>;
+  getInternalUserId(externalUserId: string, provider: string): Promise<string | null>;
 }

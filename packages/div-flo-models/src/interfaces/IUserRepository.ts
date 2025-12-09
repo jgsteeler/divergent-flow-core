@@ -1,6 +1,8 @@
 import type { User, OAuthAccount, UserProfile } from '@prisma/client';
 
 export interface IUserRepository {
+  updateUserProfile(profile: Partial<UserProfile> & { userId: string }): Promise<UserProfile>;
+  findUserProfileByUserId(userId: string): Promise<UserProfile | null>;
   create(user: User): Promise<User>;
   findById(id: string): Promise<User | null>;
   findByEmail(email: string): Promise<User | null>;

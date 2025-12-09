@@ -14,9 +14,11 @@ primary_region = 'iad'
 
 [env]
   ENABLE_SWAGGER = "false"
-  OIDC_ISSUER_URL = "https://divergent-flow-keycloak.fly.dev/realms/df-prod"
-  OIDC_AUDIENCE = "web-app,cli-app"
-  CORS_ORIGINS = "https://divergent-flow.netlify.app,https://www.divergent-flow.netlify.app"
+  AUTH0_ISSUER = "https://dev-axm38gs1176ibx7p.us.auth0.com/"
+  AUTH0_AUDIENCE = "https://divfloapi"
+  AUTH0_JWKS_URL = "https://dev-axm38gs1176ibx7p.us.auth0.com/.well-known/jwks.json"
+  AUTH0_ROLES_CLAIM = "roles"
+  CORS_ORIGINS = "https://divergent-flow.netlify.app"
   APP_BASE_URL = "https://divergent-flow-core.fly.dev"
 
 [http_service]

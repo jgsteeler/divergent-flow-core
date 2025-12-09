@@ -6,7 +6,137 @@ import { User, OAuthAccount, UserProfile} from '@prisma/client';
 export class UserService implements IUserService {
   constructor(
     @inject('IUserRepository') private repo: IUserRepository
-  ) {}
+  ) {} 
+  
+  /**
+     * Maps a userId (internal or OAuth provider ID) to the internal userId.
+     * If userId is internal, returns it. If OAuth, looks up and returns internal userId.
+     */
+    async getInternalUserId(userId: string, provider?: string): Promise<string> {
+      if (!userId) throw new Error('userId is required');
+      // Try internal userId first
+      const user = await this.getUserById(userId);
+      if (user) return user.id;
+      // If not found, try as OAuth provider ID
+      if (provider) {
+        const oauthUser = await this.getUserByOAuthAccount(provider, userId);
+        if (oauthUser) return oauthUser.id;
+      }
+      throw new Error('No valid internal userId found for given userId');
+    }
+  
+
+  
+  /**
+     * Provision or update a user from OAuth (Auth0) claims.
+     * Ensures user exists and is linked to the OAuth account.
+     */
+    async provisionOrUpdateOAuthUser({ 
+      sub,
+      email,
+      roles, 
+      plan,
+      created_at,
+      emailVerified,
+      provider, 
+      username, 
+      name, 
+      given_name, 
+      family_name,
+      nickname,
+      picture }: {
+      sub: string;
+      email: string;
+      roles?: string[];
+      plan?: string;
+      created_at?: Date;
+      emailVerified?: boolean;
+      provider: string;
+      username?: string;
+      name?: string;
+      given_name?: string;
+      family_name?: string;
+      nickname?: string;
+      picture?: string;
+    }): Promise<User> {
+      console.log('[UserService] Provisioning user:', { sub, email, provider });
+      if (!sub || !email || !provider) {
+        console.error('[UserService] Missing required fields:', { sub, email, provider });
+        throw new Error('sub, email, and provider are required');
+      }
+      try {
+        // 1. Check for user by email
+        let user = await this.getUserByEmail(email);
+        if (user) {
+          console.log('[UserService] Found user by email:', user.id);
+          // Update last login and emailVerified
+          user = await this.updateUser({ id: user.id, lastLoginAt: new Date(), emailVerified });
+        } else {
+          // Create user
+          const finalUsername = username || email.split('@')[0];
+          const usernameToUse = nickname || finalUsername;
+          user = await this.createUser({
+            email,
+            username: usernameToUse,
+            emailVerified: emailVerified || false,
+            password: null,
+            lastLoginAt: new Date(),
+          });
+          console.log('[UserService] Created new user:', user.id);
+        }
+
+        // 2. Check for OAuthAccount by provider + sub
+        const oauthAccount = await this.getUserByOAuthAccount(provider, sub);
+        if (oauthAccount) {
+          if (oauthAccount.id !== user.id) {
+            console.warn('[UserService] OAuthAccount userId mismatch:', { oauthAccountUserId: oauthAccount.id, userId: user.id });
+            // Optionally handle mismatch (e.g., update, error, etc.)
+          } else {
+            console.log('[UserService] OAuthAccount already linked:', oauthAccount.id);
+          }
+        } else {
+          await this.createOAuthAccount({
+            userId: user.id,
+            provider,
+            providerAccountId: sub,
+          });
+          console.log('[UserService] Linked OAuth account:', { userId: user.id, provider, sub });
+        }
+
+        // 3. Check for UserProfile by userId
+        let profile = await this.repo.findUserProfileByUserId(user.id);
+        if (profile) {
+          await this.repo.updateUserProfile({
+            userId: user.id,
+            displayName: name,
+            firstName: given_name,
+            lastName: family_name,
+            avatarUrl: picture,
+          });
+          console.log('[UserService] Updated user profile:', user.id);
+        } else {
+          await this.createUserProfile({
+            userId: user.id,
+            displayName: name,
+            firstName: given_name,
+            lastName: family_name,
+            avatarUrl: picture,
+          });
+          console.log('[UserService] Created user profile:', user.id);
+        }
+        // Track duplicate provisioning calls
+        if ((global as any).__provisioningCallCount === undefined) {
+          (global as any).__provisioningCallCount = 0;
+        }
+        (global as any).__provisioningCallCount++;
+        console.log(`[UserService] Provisioning call count (per process): ${(global as any).__provisioningCallCount}`);
+        return user;
+      } catch (err) {
+        console.error('[UserService] Error during provisioning:', err);
+        throw err;
+      }
+    }
+
 
   async createUser(user: Partial<User> & { email: string; username: string }): Promise<User> {
     if (!user.email || !user.username) {
