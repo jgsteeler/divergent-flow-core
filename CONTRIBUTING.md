@@ -47,7 +47,43 @@ git rebase main
 git push --force-with-lease origin 123-fix-bug-description
 ```
 
-Finally, go to GitHub and make a Pull Request.
+Finally, go to GitHub and make a Pull Request to the `main` branch.
+
+### What happens after you submit a PR?
+
+This repository follows **GitHub Flow** with automated CI/CD:
+
+1. **Automated Tests**: CI will automatically run all tests on your PR
+2. **Staging Deployment**: Your changes will be automatically deployed to a staging environment for preview
+3. **Review Process**: A maintainer will review your changes
+4. **Merge to Main**: Once approved, your PR will be merged to main
+5. **Release**: Release Please will automatically create/update a release PR
+6. **Production**: When the release PR is merged (with approval), your changes go to production
+
+See [GITHUB_FLOW.md](GITHUB_FLOW.md) for complete details on our CI/CD pipeline.
+
+### PR Title Format
+
+We use [Conventional Commits](https://www.conventionalcommits.org/) for PR titles. Your PR title should follow this format:
+
+```
+<type>(<scope>): <description>
+
+Examples:
+feat(api): add new endpoint for user preferences
+fix(core): resolve null pointer in task service
+docs: update README with new installation steps
+```
+
+Common types:
+- `feat`: A new feature
+- `fix`: A bug fix
+- `docs`: Documentation changes
+- `style`: Code style changes (formatting, etc.)
+- `refactor`: Code refactoring
+- `perf`: Performance improvements
+- `test`: Adding or updating tests
+- `chore`: Maintenance tasks
 
 ## Keeping your Pull Request updated
 
