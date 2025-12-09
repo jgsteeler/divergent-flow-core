@@ -12,9 +12,7 @@ jobs:
     name: Deploy app
     runs-on: ubuntu-latest
     # Only run if PR was merged and is a release-please PR
-    if: |
-      github.event.pull_request.merged == true &&
-      startsWith(github.event.pull_request.head.ref, 'release-please--')
+    if: github.event.pull_request.merged == true && startsWith(github.event.pull_request.head.ref, 'release-please--')
     environment:
       name: production
       url: https://divergent-flow-core.fly.dev

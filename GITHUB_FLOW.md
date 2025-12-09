@@ -94,7 +94,7 @@ To enable manual approval for production deployments:
 
 4. **Merge Release PR**
    ```
-   Merge release-please--main--div-flo-core → main
+   Merge release-please--main--divergent-flow-core → main
    ```
    → Awaits manual approval 🚦
    → Deploys to production ✅
