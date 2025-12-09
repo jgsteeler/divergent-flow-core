@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.4.0](https://github.com/jgsteeler/divergent-flow-core/compare/api-v0.3.0...api-v0.4.0) (2025-12-09)
+
+
+### Features
+
+* releasing captures to prod ([#31](https://github.com/jgsteeler/divergent-flow-core/issues/31)) ([37d3631](https://github.com/jgsteeler/divergent-flow-core/commit/37d3631e2012089d7e15109226e448871a60d02d))
+* **server:** add '/healthz' alias for health check and update logging ([37d3631](https://github.com/jgsteeler/divergent-flow-core/commit/37d3631e2012089d7e15109226e448871a60d02d))
+* **server:** add '/healthz' alias for health check and update logging ([37d3631](https://github.com/jgsteeler/divergent-flow-core/commit/37d3631e2012089d7e15109226e448871a60d02d))
+
+
+### Bug Fixes
+
+* **logger:** add '/healthz' endpoint for health checks ([37d3631](https://github.com/jgsteeler/divergent-flow-core/commit/37d3631e2012089d7e15109226e448871a60d02d))
+* **logger:** add '/healthz' endpoint for health checks ([37d3631](https://github.com/jgsteeler/divergent-flow-core/commit/37d3631e2012089d7e15109226e448871a60d02d))
+
 ## [0.3.0](https://github.com/jgsteeler/divergent-flow-core/compare/api-v0.2.0...api-v0.3.0) (2025-11-27)
 
 

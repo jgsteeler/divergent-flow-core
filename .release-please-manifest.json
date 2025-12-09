@@ -1,6 +1,6 @@
 {
-  ".": "0.3.0",
-  "packages/div-flo-api": "0.3.0",
-  "packages/div-flo-core": "0.3.0",
-  "packages/div-flo-models": "0.3.0"
+  ".": "0.4.0",
+  "packages/div-flo-api": "0.4.0",
+  "packages/div-flo-core": "0.4.0",
+  "packages/div-flo-models": "0.4.0"
 }

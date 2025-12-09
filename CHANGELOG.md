@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.4.0](https://github.com/jgsteeler/divergent-flow-core/compare/divergent-flow-core-v0.3.0...divergent-flow-core-v0.4.0) (2025-12-09)
+
+
+### Features
+
+* **ci:** Implement GitHub Flow with PR-based staging and release-gated production ([#36](https://github.com/jgsteeler/divergent-flow-core/issues/36)) ([7092a8e](https://github.com/jgsteeler/divergent-flow-core/commit/7092a8e07f9f76a2506d421778923f71c02dfe70))
+* releasing captures to prod ([#31](https://github.com/jgsteeler/divergent-flow-core/issues/31)) ([37d3631](https://github.com/jgsteeler/divergent-flow-core/commit/37d3631e2012089d7e15109226e448871a60d02d))
+* **server:** add '/healthz' alias for health check and update logging ([56ca287](https://github.com/jgsteeler/divergent-flow-core/commit/56ca287106739da8abcca0f34c07fe9369771598))
+* **server:** add '/healthz' alias for health check and update logging ([56ca287](https://github.com/jgsteeler/divergent-flow-core/commit/56ca287106739da8abcca0f34c07fe9369771598))
+* **server:** add '/healthz' alias for health check and update logging ([37d3631](https://github.com/jgsteeler/divergent-flow-core/commit/37d3631e2012089d7e15109226e448871a60d02d))
+* **server:** add '/healthz' alias for health check and update logging ([37d3631](https://github.com/jgsteeler/divergent-flow-core/commit/37d3631e2012089d7e15109226e448871a60d02d))
+
+
+### Bug Fixes
+
+* Fix prisma deployment issue ([#33](https://github.com/jgsteeler/divergent-flow-core/issues/33)) ([56ca287](https://github.com/jgsteeler/divergent-flow-core/commit/56ca287106739da8abcca0f34c07fe9369771598))
+* **logger:** add '/healthz' endpoint for health checks ([56ca287](https://github.com/jgsteeler/divergent-flow-core/commit/56ca287106739da8abcca0f34c07fe9369771598))
+* **logger:** add '/healthz' endpoint for health checks ([56ca287](https://github.com/jgsteeler/divergent-flow-core/commit/56ca287106739da8abcca0f34c07fe9369771598))
+* **logger:** add '/healthz' endpoint for health checks ([37d3631](https://github.com/jgsteeler/divergent-flow-core/commit/37d3631e2012089d7e15109226e448871a60d02d))
+* **logger:** add '/healthz' endpoint for health checks ([37d3631](https://github.com/jgsteeler/divergent-flow-core/commit/37d3631e2012089d7e15109226e448871a60d02d))
+
 ## [0.3.0](https://github.com/jgsteeler/divergent-flow-core/compare/divergent-flow-core-v0.2.0...divergent-flow-core-v0.3.0) (2025-11-27)
 
 
