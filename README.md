@@ -1,8 +1,11 @@
 # divergent-flow-core
 
-[![Core Staging Deploy](https://github.com/jgsteeler/divergent-flow-core/actions/workflows/core-staging-deploy.yml/badge.svg?branch=develop)](https://github.com/jgsteeler/divergent-flow-core/actions/workflows/core-staging-deploy.yml)
+[![CI](https://github.com/jgsteeler/divergent-flow-core/actions/workflows/ci.yml/badge.svg)](https://github.com/jgsteeler/divergent-flow-core/actions/workflows/ci.yml)
+[![Core Staging Deploy](https://github.com/jgsteeler/divergent-flow-core/actions/workflows/core-staging-deploy.yml/badge.svg)](https://github.com/jgsteeler/divergent-flow-core/actions/workflows/core-staging-deploy.yml)
 
 Core business logic and API services for Divergent Flow — ADHD-optimized productivity system.
+
+> **📋 CI/CD**: This repository follows GitHub Flow. See [GITHUB_FLOW.md](GITHUB_FLOW.md) for details on our automated deployment pipeline.
 
 ## Local Development (without Docker)
 
@@ -121,6 +124,14 @@ If you override `PORT` in `.env.local`, adjust the URLs accordingly.
 
 ## CI/CD and Docker
 
+This repository follows **GitHub Flow** with automated CI/CD. See [GITHUB_FLOW.md](GITHUB_FLOW.md) for complete workflow documentation.
+
+Quick overview:
+- **PR to main** → Automatic staging deployment for preview
+- **Merge to main** → Release Please creates release PR
+- **Merge release PR** → Manual approval → Production deployment
+
+Technical details:
 - CI runs Node 20 and a Postgres service; no docker-compose is used in pipelines.
 - The provided `Dockerfile` is for building deployable images in CI/CD.
 - docker-compose files are intentionally not tracked; create your own local compose if you prefer containers for development.
