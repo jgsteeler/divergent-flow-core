@@ -1,9 +1,21 @@
 # divergent-flow-core
 
+> ## 🗄️ **ARCHIVED REPOSITORY**
+> 
+> **This repository is no longer actively maintained.** Development has moved to [divergent-flow-mvp](https://github.com/jgsteeler/divergent-flow-mvp).
+> 
+> This codebase serves as a reference implementation for TypeScript/Node.js patterns but is being replaced with a simpler MVP approach. See [ARCHIVE.md](ARCHIVE.md) for the full story and rationale.
+> 
+> **Active Project:** [jgsteeler/divergent-flow-mvp](https://github.com/jgsteeler/divergent-flow-mvp)
+
+---
+
 [![CI](https://github.com/jgsteeler/divergent-flow-core/actions/workflows/ci.yml/badge.svg)](https://github.com/jgsteeler/divergent-flow-core/actions/workflows/ci.yml)
 [![Core Staging Deploy](https://github.com/jgsteeler/divergent-flow-core/actions/workflows/core-staging-deploy.yml/badge.svg)](https://github.com/jgsteeler/divergent-flow-core/actions/workflows/core-staging-deploy.yml)
 
 Core business logic and API services for Divergent Flow — ADHD-optimized productivity system.
+
+**⚠️ Note:** This is archived reference code. For active development, see [divergent-flow-mvp](https://github.com/jgsteeler/divergent-flow-mvp).
 
 > **📋 CI/CD**: This repository follows GitHub Flow. See [GITHUB_FLOW.md](GITHUB_FLOW.md) for details on our automated deployment pipeline.
 

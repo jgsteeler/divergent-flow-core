@@ -1,5 +1,9 @@
 # @div-flo/core
 
+> **🗄️ ARCHIVED** - This package is part of an archived repository. See [../../ARCHIVE.md](../../ARCHIVE.md) for details.
+> 
+> **Active development:** [divergent-flow-mvp](https://github.com/jgsteeler/divergent-flow-mvp)
+
 Business logic and services for Divergent Flow (monorepo package).
 
 ## Environment

@@ -1,7 +1,8 @@
 {
   "name": "@div-flo/models",
   "version": "0.4.0",
-  "description": "Shared interfaces and DTOs for Divergent Flow",
+  "description": "[ARCHIVED] Shared interfaces and DTOs for Divergent Flow. See https://github.com/jgsteeler/divergent-flow-mvp",
+  "deprecated": true,
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {

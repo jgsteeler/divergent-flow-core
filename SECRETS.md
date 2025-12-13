@@ -1,5 +1,11 @@
 # Secret Management for Divergent Flow
 
+> **🗄️ ARCHIVED** - This repository is no longer deployed. See [ARCHIVE.md](ARCHIVE.md) for details.
+
+**The following documentation is kept for historical reference only.**
+
+---
+
 This document explains how to manage secrets for the Divergent Flow application across different environments.
 
 ## Overview

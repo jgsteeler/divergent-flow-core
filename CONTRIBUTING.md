@@ -1,5 +1,19 @@
 # Contributing to Divergent Flow
 
+> ## 🗄️ **ARCHIVED REPOSITORY**
+> 
+> **This repository is no longer accepting contributions.** Development has moved to [divergent-flow-mvp](https://github.com/jgsteeler/divergent-flow-mvp).
+> 
+> If you'd like to contribute to the Divergent Flow project, please visit the active repository at [jgsteeler/divergent-flow-mvp](https://github.com/jgsteeler/divergent-flow-mvp).
+> 
+> See [ARCHIVE.md](ARCHIVE.md) for the full explanation of why this repository was archived.
+
+---
+
+**The following documentation is kept for historical reference only.**
+
+---
+
 First off, thank you for considering contributing to Divergent Flow. It's people like you that make open source such a great community.
 
 ## Where do I go from here?

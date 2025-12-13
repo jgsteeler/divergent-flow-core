@@ -1,5 +1,11 @@
 # GitHub Flow CI/CD
 
+> **🗄️ ARCHIVED** - This repository's CI/CD pipelines will be disabled. See [ARCHIVE.md](ARCHIVE.md) for details.
+
+**The following documentation is kept for historical reference only.**
+
+---
+
 This repository follows GitHub Flow with automated CI/CD pipelines.
 
 ## Workflow Overview
