@@ -1,5 +1,9 @@
 # @div-flo/models
 
+> **🗄️ ARCHIVED** - This package is part of an archived repository. See [../../ARCHIVE.md](../../ARCHIVE.md) for details.
+> 
+> **Active development:** [divergent-flow-mvp](https://github.com/jgsteeler/divergent-flow-mvp)
+
 Shared DTOs, interfaces, and Prisma schema/client for Divergent Flow.
 
 ## Environment

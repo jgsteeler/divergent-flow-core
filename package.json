@@ -1,7 +1,8 @@
 {
   "name": "divergent-flow-core",
   "version": "0.4.0",
-  "description": "Core business logic and API services for Divergent Flow - ADHD-optimized productivity system",
+  "description": "[ARCHIVED] Core business logic and API services for Divergent Flow - ADHD-optimized productivity system. See https://github.com/jgsteeler/divergent-flow-mvp for active development.",
+  "deprecated": "This package is archived. Active development has moved to divergent-flow-mvp. See ARCHIVE.md for details.",
   "private": true,
   "workspaces": [
     "packages/*"
